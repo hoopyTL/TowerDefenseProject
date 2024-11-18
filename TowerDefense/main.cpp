@@ -107,18 +107,18 @@ void ThreadFunc1(cgame& cg) {
 
     while (!cg.getIsExist1()) {
         // Manage the first enemy
-        ctool::Draw((char*)"\033[32mE\033[0m", i1, _P1, _ENEMY1);
+        //ctool::Draw((char*)"\033[32mE\033[0m", i1, _P1, _ENEMY1);
         ce1.setCurr(_ENEMY1);
         if (_ENEMY1.getX() == _END1.getX() && _ENEMY1.getY() == _END1.getY()) {
             break;
         }
         else if (_ENEMY1.getX() == _BULLET1.getX() && _ENEMY1.getY() == _BULLET1.getY()) {
-            ctool::Draw((char*)" ", i1, _P1, _ENEMY1);
+            //ctool::Draw((char*)" ", i1, _P1, _ENEMY1);
             break;
         }
         else i1++;
         Sleep(1000 / SPEED1);
-        ctool::Draw((char*)" ", i1 - 1, _P1, _ENEMY1);
+        //ctool::Draw((char*)" ", i1 - 1, _P1, _ENEMY1);
 
         //// Manage the second enemy
         //ctool::Draw((char*)"\033[33mE\033[0m", i2, _P2, _ENEMY2);
