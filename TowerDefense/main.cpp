@@ -120,19 +120,19 @@ void ThreadFunc1(cgame& cg) {
         Sleep(1000 / SPEED1);
         ctool::Draw((char*)" ", i1 - 1, _P1, _ENEMY1);
 
-        // Manage the second enemy
-        ctool::Draw((char*)"\033[33mE\033[0m", i2, _P2, _ENEMY2);
-        ce2.setCurr(_ENEMY2);
-        if (_ENEMY2.getX() == _END2.getX() && _ENEMY2.getY() == _END2.getY()) {
-            break;
-        }
-        else if (_ENEMY2.getX() == _BULLET2.getX() && _ENEMY2.getY() == _BULLET2.getY()) {
-            ctool::Draw((char*)" ", i2, _P2, _ENEMY2);
-            break;
-        }
-        else i2++;
-        Sleep(1000 / SPEED2);
-        ctool::Draw((char*)" ", i2 - 1, _P2, _ENEMY2);
+        //// Manage the second enemy
+        //ctool::Draw((char*)"\033[33mE\033[0m", i2, _P2, _ENEMY2);
+        //ce2.setCurr(_ENEMY2);
+        //if (_ENEMY2.getX() == _END2.getX() && _ENEMY2.getY() == _END2.getY()) {
+        //    break;
+        //}
+        //else if (_ENEMY2.getX() == _BULLET2.getX() && _ENEMY2.getY() == _BULLET2.getY()) {
+        //    ctool::Draw((char*)" ", i2, _P2, _ENEMY2);
+        //    break;
+        //}
+        //else i2++;
+        //Sleep(1000 / SPEED2);
+        //ctool::Draw((char*)" ", i2 - 1, _P2, _ENEMY2);
     }
     cg.setIsExist1(true);
 }
