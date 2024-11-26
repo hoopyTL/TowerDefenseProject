@@ -9,16 +9,14 @@
 #include <conio.h>
 #include <mmsystem.h>
 
-using namespace std;
-
 class ctool 
 {
 public:
-    static std::mutex mtx;
+    static mutex mtx;
 
     static void ShowConsoleCursor(bool showFlag);
     static void GotoXY(int x, int y);
-    static void Draw(const char* str, int i, cpoint p[], cpoint& _p);
+    static void Draw(const char* str, int i, const vector<cpoint>& path, cpoint& _p);
     static void printLogo();
     static bool printExit();
     static void printMenu();

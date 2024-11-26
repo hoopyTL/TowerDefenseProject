@@ -17,12 +17,14 @@ void ctool::GotoXY(int x, int y) {
     SetConsoleCursorPosition(consoleOutput, crd);
 }
 
-void ctool::Draw(const char* str, int i, cpoint p[], cpoint& _p) {
-    std::lock_guard<std::mutex> lock(mtx);
+void ctool::Draw(const char* str, int i, const vector<cpoint>& p, cpoint& _p) {
+    mtx.lock();
     _p = p[i];
-    GotoXY(_p.getX(), _p.getY());
-    std::cout << str;
+    ctool::GotoXY(_p.getX(), _p.getY());
+    cout << str;
+    mtx.unlock();
 }
+
 
 void ctool::printLogo() {
     system("cls");
@@ -99,11 +101,11 @@ void ctool::printMenu()
     DWORD written;
     FillConsoleOutputAttribute(consoleOutput, BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED, consoleSize, { 0, 0 }, &written);
     printLogo();
-    Sleep(3000);
+    Sleep(500);
 
     system("cls");
     std::cout << "Loading menu...\n";
-    Sleep(1000);
+    Sleep(500);
 
     int menu_option;
 
@@ -125,7 +127,7 @@ void ctool::printMenu()
         {
             system("cls");
             std::cout << "Starting game...\n";
-            Sleep(1000); // delay 1 second
+            Sleep(500); // delay 1 second
             system("cls");
             cout << "Press any key to start demo: ";
             cin.get();

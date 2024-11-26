@@ -2,14 +2,15 @@
 
 cgame::cgame() : _ISEXIT1(false), _ISEXIT2(false) {}
 
-void cgame::setMap()
+void cgame::setMap(cmap map)
 {
-    cmap _map1;
-    _map.push_back(_map1);
+    _map.push_back(map);
 }
 
-void cgame::startGame() {
+void cgame::startGame() 
+{
     system("cls");
-    setMap();
+    cmap map1;
+    setMap(map1);
     _map[0].drawMap();
 }

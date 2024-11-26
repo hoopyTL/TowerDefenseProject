@@ -1,21 +1,45 @@
-// ctower.h
-#pragma once
+﻿#pragma once
+#include "cpoint.h"
+#include "cenemy.h"
 
-#include "cbullet.h"
+#define UP_LEFT     0
+#define UP          1
+#define UP_RIGHT    2
+#define RIGHT       3
+#define DOWN_RIGHT  4
+#define DOWN        5
+#define DOWN_LEFT   6
+#define LEFT        7
 
-class ctower {
+struct Treach 
+{
+    cpoint point;  
+    int index;     
+    int step; 
+
+    Treach(const cpoint& p, int idx, int stp)
+        : point(p), index(idx), step(stp) {}
+};
+
+class ctower 
+{
 private:
-    cpoint _location;
-    cbullet _cb;
-
+    cpoint _tpos;
+    int _damage;
+    vector<Treach> _treach;
+    cpoint _m[cpoint::MAP_SIZE][cpoint::MAP_SIZE];
 public:
-    ctower() : _location{ 0, 0} {}
+    ctower();
+    ctower(const cpoint& tpos, int damage, vector<Treach> treach);
 
-    cpoint getLocation() const { return _location; }
-    void setLocation(cpoint tl) { _location = tl; }
+    cpoint getCurr() const;
+    void setCurr(const cpoint& pos);
 
-    void setMapForBullet(cpoint[][cpoint::MAP_SIZE]);
-    void calcPathBullet() { _cb.calcPathBullet(_location); }
+    int getDamage() const;
+    void setDamage(int damage);
 
-    cbullet& getBullet() { return _cb; }
+    vector<Treach> getTreach() const;
+    void createTreach(const cenemy&);
+
+    pair<int, int> calculateShootDirection(const vector<cenemy>& enemiesList) const;
 };
