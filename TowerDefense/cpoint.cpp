@@ -43,25 +43,24 @@ double cpoint::distanceTo(const cpoint& other) const {
     return sqrt(scaledDx * scaledDx + scaledDy * scaledDy);
 }
 
-// Ph??ng th?c tính s? b??c t? ?i?m này ??n ?i?m khác trên l??i
-int cpoint::countSteps(cpoint other) {
-    // Ki?m tra n?u hai ?i?m trên cùng m?t ???ng ngang
-    if (this->y == other.y) {
-        return abs(this->x - other.x) / CELL_WIDTH;  // S? b??c trên cùng m?t ???ng ngang (chia theo CELL_WIDTH)
+int cpoint::countSteps(cpoint other) 
+{
+    if (this->y == other.y) 
+    {
+        return abs(this->x - other.x);
     }
 
-    // Ki?m tra n?u hai ?i?m trên cùng m?t ???ng d?c
-    if (this->x == other.x) {
-        return abs(this->y - other.y) / CELL_HEIGHT;  // S? b??c trên cùng m?t ???ng d?c (chia theo CELL_HEIGHT)
+    if (this->x == other.x) 
+    {
+        return abs(this->y - other.y);
     }
 
-    // Ki?m tra n?u hai ?i?m trên cùng m?t ???ng chéo
-    if (abs(this->x - other.x) == abs(this->y - other.y)) {
-        // N?u ?i chéo, m?i b??c chéo s? tính là 1 b??c, m?c dù kho?ng cách th?c t? là CELL_WIDTH + CELL_HEIGHT
-        return max(abs(this->x - other.x) / CELL_WIDTH, abs(this->y - other.y) / CELL_HEIGHT);
+    if (abs(this->x - other.x) == abs(this->y - other.y)) 
+    {
+        return max(abs(this->x - other.x), abs(this->y - other.y));
     }
 
-    // N?u không cùng trên m?t ???ng, không th? ?i tr?c ti?p
+
     return -1;
 }
 

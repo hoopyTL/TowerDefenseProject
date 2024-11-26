@@ -11,6 +11,7 @@
 #define DOWN_LEFT   6
 #define LEFT        7
 
+
 struct Treach 
 {
     cpoint point;  
@@ -41,5 +42,5 @@ public:
     vector<Treach> getTreach() const;
     void createTreach(const cenemy&);
 
-    pair<int, int> calculateShootDirection(const vector<cenemy>& enemiesList) const;
+    int calculateShootDirection(const vector<cenemy>& enemiesList, int& pathIndex) const;
 };

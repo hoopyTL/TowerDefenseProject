@@ -13,6 +13,7 @@ private:
     int _height;
     int _width;
     cpoint _m[cpoint::MAP_SIZE][cpoint::MAP_SIZE];
+
 public:
     cmap();
 
@@ -27,6 +28,7 @@ public:
     vector <ctower>& getTowers() { return _ctw; }
     vector <cbullet>& getBullets() { return _cb; }
 
-    vector<cpoint> createBulletPath(ctower);
-    void addBullet(ctower);
+    vector<cpoint> createBulletPath(ctower tower, const vector<cenemy>& enemiesList);
+    bool addBullet(ctower, const vector<cenemy>& enemiesList);
+
 };
