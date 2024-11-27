@@ -32,7 +32,9 @@ public:
     vector<cbullet>& getBullets() { return _cb; }
 
     vector<cpoint> createBulletPath(ctower tower, const vector<cenemy>& enemiesList);
-    bool addBullet(ctower&, const vector<cenemy>& enemiesList);
+    // bool addBullet(ctower&, const vector<cenemy>& enemiesList);
+
+    void addBulletToList(const cbullet& newBullet);
 
     // void updateEnemies();
     // void updateBullets();

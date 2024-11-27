@@ -18,11 +18,10 @@ void ctool::GotoXY(int x, int y) {
 }
 
 void ctool::Draw(const char* str, int i, const vector<cpoint>& p, cpoint& _p) {
-    mtx.lock();
+    std::lock_guard<std::mutex> lock(mtx);
     _p = p[i];
     ctool::GotoXY(_p.getX(), _p.getY());
     cout << str;
-    mtx.unlock();
 }
 
 

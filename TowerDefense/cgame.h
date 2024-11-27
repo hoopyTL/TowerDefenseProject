@@ -22,11 +22,12 @@ public:
     vector<cmap> getMap() { return _map; }
 
     void startGame();
+    //bool addBullet(cmap& map, ctower& tower, const vector<cenemy>& enemiesList);
     // Process the game logic including multi-threaded parts
     void processGame();
 
     // Game state update logic (win/loss checking)
     void gameStateUpdate();
-    void enemyMovement(cenemy& enemy, vector<cenemy>& ceList);
+    void enemyMovement(cenemy& enemy, int count);
     void bulletMovement(cbullet& bullet, vector<cenemy>& enemies);
 };

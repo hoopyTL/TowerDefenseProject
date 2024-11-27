@@ -1,11 +1,13 @@
 ﻿#pragma once
 #include "cpoint.h"
 #include <vector>
+#include <mutex>
 
 using namespace std;
 
 class cenemy {
 private:
+    //std::mutex enemyMutex;
     int _speed;                   // Tốc độ di chuyển
     int _health;                  // Máu của enemy
     cpoint _epos;                 // Vị trí hiện tại
@@ -36,7 +38,7 @@ public:
 
     // Methods
     void decreaseHealth(int damage);
-    void updateStatus();
+    //void updateStatus();
 
-    void move();
+    //void move();
 };

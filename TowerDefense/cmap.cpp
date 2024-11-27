@@ -21,16 +21,24 @@ void cmap::resetMapData() {
 
 // Create map data
 void cmap::makeMapData() {
-    vector<cpoint> epath;
+    vector<cpoint> epath1;
+    vector<cpoint> epath2;
 
     // Create enemy path
-    for (int i = 0; i <= 8; ++i) epath.push_back(_m[0][i]);
-    for (int i = 1; i <= 12; ++i) epath.push_back(_m[i][8]);
-    for (int i = 8; i <= 13; ++i) epath.push_back(_m[12][i]);
+    for (int i = 0; i <= 8; ++i) epath1.push_back(_m[0][i]);
+    for (int i = 1; i <= 11; ++i) epath1.push_back(_m[i][8]);
+    for (int i = 8; i <= 13; ++i) epath1.push_back(_m[11][i]);
+
+    /*for (int i = 0; i <= 7; ++i) epath2.push_back(_m[1][i]);
+    for (int i = 2; i <= 12; ++i) epath2.push_back(_m[i][7]);
+    for (int i = 7; i <= 13; ++i) epath2.push_back(_m[12][i]);*/
 
     // Add enemy
-    cenemy enemy1(2, 100, _m[0][0], epath, 0);
+    cenemy enemy1(2, 100, _m[1][0], epath1, 0);
     _ce.push_back(enemy1);
+
+    cenemy enemy2(2, 100, _m[0][0], epath1, 0);
+    _ce.push_back(enemy2);
 
     // Add tower
     ctower tower1(_m[6][3], 50, vector<Treach>{});
@@ -90,12 +98,17 @@ vector<cpoint> cmap::createBulletPath(ctower tower, const vector<cenemy>& enemie
     return bpath;
 }
 
-// Add bullet
-bool cmap::addBullet(ctower& tower, const vector<cenemy>& enemiesList) {
-    auto path = createBulletPath(tower, enemiesList);
-    if (path.empty()) return false;
+//// Add bullet
+//bool cmap::addBullet(ctower& tower, const vector<cenemy>& enemiesList) {
+//    auto path = createBulletPath(tower, enemiesList);
+//    if (path.empty()) return false;
+//
+//    cbullet newBullet(1, tower.getCurr(), 50, path, 0, true);
+//    _cb.push_back(newBullet);
+//    return true;
+//}
 
-    cbullet newBullet(1, tower.getCurr(), 50, path, 0, true);
+// Trong class cmap
+void cmap::addBulletToList(const cbullet& newBullet) {
     _cb.push_back(newBullet);
-    return true;
 }
