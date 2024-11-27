@@ -1,141 +1,184 @@
-#include "cgame.h"
+﻿#include "cgame.h"
+#include <memory>
+#include <mutex>
+#include <thread>
+#include <vector>
 
+// Mutex for synchronization
+std::mutex gameMutex;
+std::mutex ceListMutex;
 
-void cgame::setMap(cmap map)
-{
-    _map.push_back(map);
+void cgame::addMap(cmap map) {
+    _map.push_back(map); // Add map to the list
 }
 
-void cgame::startGame() 
-{
+void cgame::startGame() {
     system("cls");
-    cmap map1;
-    setMap(map1);
+    cmap map1; // Create a new map
+    addMap(map1); // Add it to the game
+
+    // Draw the map
     _map[0].drawMap();
 }
 
-#include <thread>
-#include <vector>
-#include <mutex>
-
-std::mutex gameMutex; // Mutex for thread synchronization
-
 void cgame::processGame() {
-    vector<cmap> mapList = getMap();
-    cmap map = mapList[0];
+    if (_map.empty()) {
+        startGame();
+    }
 
-    vector<cenemy> ceList = map.getEnemies();
-    vector<ctower> ctowerList = map.getTowers();
+    auto& map = _map[0]; // Access the first map
 
-    // Create threads for handling enemy movement and bullet movement
-    std::thread enemyThread(&cgame::enemyMovement, this, std::ref(ceList));
-    std::thread bulletThread(&cgame::bulletMovement, this, std::ref(ctowerList), std::ref(ceList));
+    std::vector<std::thread> enemyThreads;
+    std::vector<std::thread> bulletThreads;
 
-    // Game state update thread
-    std::thread gameStateThread(&cgame::gameStateUpdate, this);
+    vector<cenemy>& listCe = map.getEnemies(); // Tham chiếu danh sách enemies
 
-    // Wait for all threads to finish
-    enemyThread.join();
-    bulletThread.join();
-    gameStateThread.join();
+    for (auto& enemy : listCe) 
+    {
+        enemyThreads.push_back(std::thread([this, &enemy, &listCe]() 
+        {
+            enemyMovement(enemy, listCe);
+            }));
+    }
+
+    for (auto& tower : map.getTowers()) 
+    {
+        std::lock_guard<std::mutex> lock(ceListMutex);
+        if (map.addBullet(tower, listCe)) {
+            for (auto& bullet : map.getBullets())
+                    bulletThreads.push_back(std::thread([this, &bullet, &listCe]() {
+                        bulletMovement(bullet, listCe);
+                        }));
+        }
+    }
+
+    std::thread gameStateThread([this]() {
+        gameStateUpdate();
+        });
+
+    for (auto& t : enemyThreads) {
+        if (t.joinable()) {
+            t.join();
+        }
+    }
+
+    for (auto& t : bulletThreads) {
+        if (t.joinable()) {
+            t.join();
+        }
+    }
+
+    if (gameStateThread.joinable()) {
+        gameStateThread.join();
+    }
 }
 
-// Enemy movement logic with mutex for synchronization
-void cgame::enemyMovement(std::vector<cenemy>& ceList) {
+
+
+void cgame::gameStateUpdate() {
     while (_isRunning && !_ISEXIT1) {
-        bool allEnemiesFinished = true;
+        if (getIsExist1()) {
+            std::lock_guard<std::mutex> lock(gameMutex); // Synchronize game state updates
+            ctool::GotoXY(0, 35); // Update game state
+        }
 
-        for (auto& ce : ceList) {
-            vector<cpoint> path = ce.getPath();
-            int pathIndex = 0;
-            cpoint _ENEMY = ce.getCurr();
+        Sleep(100); // Allow time for game processing
+    }
+}
 
-            while (pathIndex < path.size() && !_ISEXIT1) {
+void cgame::enemyMovement(cenemy& enemy, vector<cenemy>& ceList) {
+    vector<cmap> mapList = getMap();
+    cmap& map1 = mapList[0];
+
+    if (ceList.empty()) return;
+
+    vector<cpoint> path = enemy.getPath();
+    int pathIndex = 0;
+    int enemyIndex = enemy.getIndex();
+    cpoint _ENEMY = enemy.getCurr();
+
+    while (!getIsExist1()) {
+        {
+            std::lock_guard<std::mutex> lock(ceListMutex);
+            // Move enemy along the path
+            if (pathIndex < path.size()) {
                 ctool::Draw((char*)"\033[32mE\033[0m", pathIndex, path, _ENEMY);
-                ce.setCurr(_ENEMY);
-                ce.setIndex(pathIndex);
                 pathIndex++;
+                enemy.setCurr(path[pathIndex]);
+                enemy.setIndex(enemyIndex++); 
 
-                if (_ENEMY == path.back()) {
+                // Tìm enemy trong danh sách theo ID hoặc chỉ số, sau đó cập nhật
+                for (auto& e : ceList) 
+                {
+                    cout << e.getIndex();
+                    if (e.getIndex() == enemy.getIndex()) 
+                    { // So sánh bằng ID để tìm đúng enemy
+                        cout << e.getIndex();
+
+                        e = enemy;
+                        cout << "?";
+                        break;
+                    }
+                    // cout << e.getIndex() << enemy.getIndex();
+
+                }
+
+                _ENEMY = enemy.getCurr();
+
+                // Check if the enemy reached the destination
+                if (enemy.getCurr() == path.back()) {
                     ctool::Draw((char*)" ", pathIndex - 1, path, _ENEMY);
                     break;
                 }
 
-                Sleep(400 / ce.getSpeed());
+                Sleep(400 / enemy.getSpeed());
                 ctool::Draw((char*)" ", pathIndex - 1, path, _ENEMY);
             }
-
-            // If this enemy hasn't finished its path, game should continue
-            if (pathIndex < path.size()) {
-                allEnemiesFinished = false;
-            }
-        }
-
-        // If all enemies have finished, stop the game or update game state
-        if (allEnemiesFinished) {
-            std::lock_guard<std::mutex> lock(gameMutex);
-            setIsExist1(true);  // This could be a condition for the game to end
         }
     }
 }
 
-// Bullet movement logic with mutex for synchronization
-void cgame::bulletMovement(vector<ctower>& ctowerList, vector<cenemy>& ceList) {
-    vector<cbullet> activeBullets;
+
+void cgame::bulletMovement(cbullet& bullet, vector<cenemy>& enemies) {
     vector<cmap> mapList = getMap();
-    cmap map = mapList[0];
+    cmap& map1 = mapList[0];
 
-    while (_isRunning && !_ISEXIT1) {
-        for (auto& tower : ctowerList) {
-            if (map.addBullet(tower, ceList)) {
-                vector<cbullet> newBullets = map.getBullets();
-                activeBullets.insert(activeBullets.end(), newBullets.begin(), newBullets.end());
-            }
+    // Get the bullet's path and initial state
+    vector<cpoint> bulletPath = bullet.getPath();
+    cpoint bulletPos = bullet.getCurr();
+    int bulletIndex = bullet.getIndex();
+
+    while (!getIsExist1()) {
+        if (!bullet.isActive()) {
+            return; // Nếu viên đạn không còn hoạt động, dừng việc vẽ
         }
 
-        // Move bullets and check for collisions
-        for (size_t i = 0; i < activeBullets.size();) {
-            cbullet& bullet = activeBullets[i];
-            vector<cpoint> bulletPath = bullet.getPath();
-            cpoint _BULLET = bullet.getCurr();
-            int bulletIndex = bullet.getIndex();
+        // Move bullet along the path
+        if (bulletIndex < bulletPath.size()) {
+            ctool::Draw((char*)"\033[34mo\033[0m", bulletIndex, bulletPath, bulletPos);
+            bullet.setCurr(bulletPath[bulletIndex]);
+            bullet.setIndex(++bulletIndex);
 
-            if (bulletIndex < bulletPath.size()) {
-                ctool::Draw((char*)"\033[34mo\033[0m", bulletIndex, bulletPath, _BULLET);
-                bullet.setCurr(bulletPath[bulletIndex]);
-                bullet.setIndex(++bulletIndex);
-
-                // Check collision with enemies
-                for (auto& ce : ceList) {
-                    if (_BULLET == ce.getCurr()) {
-                        ctool::Draw((char*)" ", bulletIndex - 1, bulletPath, _BULLET);
-                        setIsExist1(true);
-                        activeBullets.erase(activeBullets.begin() + i);
-                        break;
-                    }
+            // Check for collision with enemies (the updated list)
+            for (auto& enemy : enemies) {
+                std::lock_guard<std::mutex> lock(ceListMutex);
+                if (bulletPos == enemy.getCurr()) {
+                    ctool::Draw((char*)" ", bulletIndex - 1, bulletPath, bulletPos);
+                    setIsExist1(true); // Bullet hits enemy
+                    bullet.setIsActive(false); // Dừng vẽ viên đạn
+                    return; // Bullet hit an enemy, so exit the loop
                 }
-
-                Sleep(200 / bullet.getSpeed());
-                ctool::Draw((char*)" ", bulletIndex - 1, bulletPath, _BULLET);
-                i++;
             }
-            else {
-                ctool::Draw((char*)" ", bulletIndex - 1, bulletPath, _BULLET);
-                activeBullets.erase(activeBullets.begin() + i);
-            }
-        }
-    }
-}
 
-// Game state update logic with periodic checking
-void cgame::gameStateUpdate() {
-    while (_isRunning && !_ISEXIT1) {
-        if (getIsExist1()) {
-            std::lock_guard<std::mutex> lock(gameMutex);
-            ctool::GotoXY(0, 35); // Update game state display
+            Sleep(200 / bullet.getSpeed());
+            ctool::Draw((char*)" ", bulletIndex - 1, bulletPath, bulletPos); // Clear previous bullet
         }
-
-        Sleep(100); // This sleep gives time for the game to process and check conditions
+        else {
+            // Bullet path finished
+            ctool::Draw((char*)" ", bulletIndex - 1, bulletPath, bulletPos);
+            bullet.setIsActive(false); // Dừng vẽ viên đạn khi đi hết path
+            return; // Bullet out of path, exit
+        }
     }
 }
 

@@ -1,15 +1,17 @@
 ﻿#include "ctower.h"
 #include <iostream>
 
-ctower::ctower() : _tpos(0, 0, 0), _damage(0) {}
+ctower::ctower() : _tpos(0, 0, 0), _damage(0), _treach({}) {}
 
 ctower::ctower(const cpoint& tpos, int damage, vector<Treach> treach) : _tpos(tpos), _damage(damage), _treach(treach) {}
 
-cpoint ctower::getCurr() const {
+cpoint ctower::getCurr() const 
+{
     return _tpos;
 }
 
-void ctower::setCurr(const cpoint& pos) {
+void ctower::setCurr(const cpoint& pos) 
+{
     _tpos = pos;
 }
 
@@ -56,9 +58,6 @@ void ctower::createTreach(const cenemy& enemy) {
     }
 }
 
-
-
-
 int ctower::calculateShootDirection(const vector<cenemy>& enemiesList, int &treachIndex) const
 {
 
@@ -68,7 +67,7 @@ int ctower::calculateShootDirection(const vector<cenemy>& enemiesList, int &trea
     int colTower = towerPoint.getY();
 
     treachIndex = -1;
-    for (Treach treachPoint : _treach)
+    for (const Treach &treachPoint : _treach)
     {
         treachIndex++;
         

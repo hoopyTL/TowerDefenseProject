@@ -1,22 +1,22 @@
 ﻿#pragma once
 #include "cpoint.h"
-#include "ctower.h"
 #include "cenemy.h"
 #include <vector>
 
-class ctower;
+using namespace std;
 
-class cbullet 
-{
+class cbullet {
 private:
-    int _speed;                  
-    cpoint _bpos;               
-    int _damage;                 
-    vector<cpoint> _bpath;   
+    int _speed;
+    cpoint _bpos;
+    int _damage;
+    vector<cpoint> _bpath;
     int _index;
+    bool _isActive;
+
 public:
     cbullet();
-    cbullet(int, cpoint, int, vector <cpoint>, int);
+    cbullet(int speed, cpoint pos, int damage, vector<cpoint> path, int index, bool isActive);
 
     cpoint getCurr() const;
     void setCurr(cpoint pos);
@@ -27,9 +27,16 @@ public:
     int getDamage() const;
     void setDamage(int damage);
 
-    int getIndex();
-    void setIndex(int);
+    int getIndex() const;
+    void setIndex(int index);
+
+    bool isActive() const;
+    void setIsActive(bool active);
 
     vector<cpoint> getPath() const;
-    void setPath(vector<cpoint> path);
+    void setPath(const vector<cpoint>& path);
+
+    void updateStatus();
+    bool checkCollisionWithEnemy(const vector<cenemy>& enemies);
+    void move(vector<cenemy>& enemies);
 };

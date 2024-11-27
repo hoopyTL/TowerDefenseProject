@@ -28,7 +28,6 @@ private:
     cpoint _tpos;
     int _damage;
     vector<Treach> _treach;
-    cpoint _m[cpoint::MAP_SIZE][cpoint::MAP_SIZE];
 public:
     ctower();
     ctower(const cpoint& tpos, int damage, vector<Treach> treach);

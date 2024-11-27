@@ -4,30 +4,39 @@
 
 using namespace std;
 
-class cenemy
-{
+class cenemy {
 private:
-    int _speed;
-    int _health;
-    cpoint _epos;
-    vector<cpoint> _epath;
-    int _index;                     
+    int _speed;                   // Tốc độ di chuyển
+    int _health;                  // Máu của enemy
+    cpoint _epos;                 // Vị trí hiện tại
+    vector<cpoint> _epath;        // Đường đi
+    int _index;                   // Vị trí hiện tại trên đường đi
+    bool _isAlive;                // Trạng thái sống/chết
 
 public:
+    // Constructors
     cenemy();
-    cenemy(int speed, int health, cpoint pos, vector<cpoint> path, int index);
+    cenemy(int speed, int health, cpoint pos, vector<cpoint> path, int index = 0, bool isAlive = true);
 
-    int getSpeed() const { return _speed; }
-    int getHealth() const { return _health; }
-    cpoint getCurr() const { return _epos; }
-    vector<cpoint> getPath() const { return _epath; }
-    int getIndex() const { return _index; }  
+    // Getters
+    int getSpeed() const;
+    int getHealth() const;
+    cpoint getCurr() const;
+    vector<cpoint> getPath() const;
+    int getIndex() const;
+    bool isAlive() const;
 
-    void setSpeed(int tspeed) { _speed = tspeed; }
-    void setHealth(int thealth) { _health = thealth; }
-    void setCurr(cpoint pos) { _epos = pos; }
-    void setPath(const vector<cpoint>& path) { _epath = path; }
-    void setIndex(int index) { _index = index; }
+    // Setters
+    void setSpeed(int tspeed);
+    void setHealth(int thealth);
+    void setCurr(cpoint pos);
+    void setPath(const vector<cpoint>& path);
+    void setIndex(int index);
+    void setAlive(bool alive);
 
+    // Methods
     void decreaseHealth(int damage);
+    void updateStatus();
+
+    void move();
 };
