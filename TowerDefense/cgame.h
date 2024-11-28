@@ -29,5 +29,7 @@ public:
     // Game state update logic (win/loss checking)
     void gameStateUpdate();
     void enemyMovement(cenemy& enemy, int count);
-    void bulletMovement(cbullet& bullet, vector<cenemy>& enemies);
+    void bulletMovement(cbullet& bullet, vector<cpoint> path);
+    //void bulletMovement(std::shared_ptr<cbullet> bullet, std::vector<cenemy>& enemies);
+    //void bulletMovement(cbullet& bullet);
 };

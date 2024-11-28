@@ -18,7 +18,7 @@ private:
 public:
     // Constructors
     cenemy();
-    cenemy(int speed, int health, cpoint pos, vector<cpoint> path, int index = 0, bool isAlive = true);
+    cenemy(int speed, int health, cpoint pos, vector<cpoint> path, int index, bool isAlive);
 
     // Getters
     int getSpeed() const;

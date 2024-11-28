@@ -7,7 +7,9 @@ using namespace std;
 class cpoint {
 public:
     // Constants and data
-    const static int MAP_SIZE = 14; // Map matrix size
+    const static int MAP_HEIGHT = 21; // Map matrix size
+    const static int MAP_WIDTH = 30; // Map matrix size
+
     const static int MAP_LEFT = 3;      // Left-coordinates of the map screen
     const static int MAP_TOP = 1;       // Top-coordinates of the map screen
 

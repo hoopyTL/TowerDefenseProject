@@ -15,7 +15,7 @@ private:
 
     int _height;
     int _width;
-    cpoint _m[cpoint::MAP_SIZE][cpoint::MAP_SIZE];
+    cpoint _m[cpoint::MAP_HEIGHT][cpoint::MAP_WIDTH];
 
 
 public:

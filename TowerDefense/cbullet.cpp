@@ -24,44 +24,44 @@ void cbullet::setIsActive(bool active) { _isActive = active; }
 vector<cpoint> cbullet::getPath() const { return _bpath; }
 void cbullet::setPath(const vector<cpoint>& path) { _bpath = path; }
 
-void cbullet::updateStatus() 
-{
-    if (_index >= _bpath.size()) {
-        _isActive = false; // Đạn không còn hoạt động nếu đã ra khỏi đường bay
-    }
-}
+//void cbullet::updateStatus() 
+//{
+//    if (_index >= _bpath.size()) {
+//        _isActive = false; // Đạn không còn hoạt động nếu đã ra khỏi đường bay
+//    }
+//}
 
-bool cbullet::checkCollisionWithEnemy(const vector<cenemy>& enemies) {
-    for (const auto& enemy : enemies) {
-        if (_bpos == enemy.getCurr() && enemy.isAlive()) {
-            return true; // Nếu đạn va chạm với kẻ thù, trả về true
-        }
-    }
-    return false; // Nếu không có va chạm
-}
-
-void cbullet::move(vector<cenemy>& enemies) {
-    if (_isActive) {
-        if (_index < _bpath.size()) {
-            _bpos = _bpath[_index];
-            _index += _speed;
-
-            if (_index >= _bpath.size()) {
-                _index = _bpath.size();
-            }
-
-            // Check collision and apply damage
-            if (checkCollisionWithEnemy(enemies)) {
-                for (auto& enemy : enemies) {
-                    if (_bpos == enemy.getCurr() && enemy.isAlive()) {
-                        enemy.decreaseHealth(_damage);  // Apply damage to the enemy
-                        _isActive = false;  // Deactivate the bullet after collision
-                        break;
-                    }
-                }
-            }
-        }
-        updateStatus();
-    }
-}
+//bool cbullet::checkCollisionWithEnemy(const vector<cenemy>& enemies) {
+//    for (const auto& enemy : enemies) {
+//        if (_bpos == enemy.getCurr() && enemy.isAlive()) {
+//            return true; // Nếu đạn va chạm với kẻ thù, trả về true
+//        }
+//    }
+//    return false; // Nếu không có va chạm
+//}
+//
+//void cbullet::move(vector<cenemy>& enemies) {
+//    if (_isActive) {
+//        if (_index < _bpath.size()) {
+//            _bpos = _bpath[_index];
+//            _index += _speed;
+//
+//            if (_index >= _bpath.size()) {
+//                _index = _bpath.size();
+//            }
+//
+//            // Check collision and apply damage
+//            if (checkCollisionWithEnemy(enemies)) {
+//                for (auto& enemy : enemies) {
+//                    if (_bpos == enemy.getCurr() && enemy.isAlive()) {
+//                        enemy.decreaseHealth(_damage);  // Apply damage to the enemy
+//                        _isActive = false;  // Deactivate the bullet after collision
+//                        break;
+//                    }
+//                }
+//            }
+//        }
+//        updateStatus();
+//    }
+//}
 

@@ -1,17 +1,17 @@
 ﻿#include "cgame.h"
-//#include <memory>
+// #include <memory>
 #include <mutex>
 #include <thread>
 //#include <vector>
 
 // Mutex for synchronization
 std::mutex printMtx;
-//std::mutex gameMutex; // Mutex for game state updates
-//std::mutex enemyMutex; // Mutex for enemies list access
-//std::mutex bulletMutex; // Mutex for bullet list access
+std::mutex gameMutex; // Mutex for game state updates
+std::mutex enemyMutex; // Mutex for enemies list access
+std::mutex bulletMutex; // Mutex for bullet list access
 
 void cgame::addMap(cmap map) {
-    //std::lock_guard<std::mutex> lock(gameMutex); // Protect the game state while adding a map
+    std::lock_guard<std::mutex> lock(gameMutex); // Protect the game state while adding a map
     _map.push_back(map); // Add map to the list
 }
 
@@ -24,21 +24,6 @@ void cgame::startGame() {
     _map[0].drawMap();
 }
 
-//bool cgame::addBullet(cmap& map, ctower& tower, const vector<cenemy>& enemiesList) {
-//    //std::lock_guard<std::mutex> lock(bulletMutex); // Protect bullet creation
-//    auto path = map.createBulletPath(tower, enemiesList);
-//    if (path.empty()) return false;
-//
-//    // Create a new bullet and add it to the map's bullet list
-//    cbullet newBullet(1, tower.getCurr(), 50, path, 0, true);
-//    map.addBulletToList(newBullet);
-//
-//    // Launch a thread to move the bullet
-//    std::thread bulletThread(&cgame::bulletMovement, this, std::ref(newBullet), std::ref(enemiesList));
-//    bulletThread.join(); // Detach to run independently
-//
-//    return true;
-//}
 
 void cgame::processGame() {
     if (_map.empty()) {
@@ -88,89 +73,106 @@ void cgame::enemyMovement(cenemy& enemy, int count) {
     vector<cmap> mapList = getMap();
     cmap& map1 = mapList[0];
 
+    auto& enemies = map1.getEnemies();
+    auto& towers = map1.getTowers();
+
     vector<cpoint> path = enemy.getPath();
     int pathIndex = 0;
     int enemyIndex = enemy.getIndex();
-    cpoint _ENEMY = enemy.getCurr();
+    // cout << enemyIndex;
+    cpoint ENEMY = enemy.getCurr();
 
-    int delaySteps = 3;
+    int delaySteps = 4;
     int delayTime = delaySteps * 500; // Delay between movements
     std::this_thread::sleep_for(std::chrono::milliseconds(count * delayTime));
 
+    vector<thread> bullet_threads;
+    vector<cbullet> bullets;
     while (!_ISEXIT1) {
         if (pathIndex < path.size()) {
             {
                 std::lock_guard<std::mutex> lock(printMtx);
-                ctool::Draw((char*)"\033[32mE\033[0m", pathIndex, path, _ENEMY); // Draw enemy
+                ctool::Draw((char*)"\033[32mE\033[0m", pathIndex, path, ENEMY); // Draw enemy
             }
-
+            
             enemy.setCurr(path[pathIndex]);
+            enemy.setIndex(pathIndex++);
 
-            //// Lock mutex to safely update the enemy's position in the list
-            //{
-            //    std::lock_guard<std::mutex> lock(enemyMutex); // Lock to safely update the enemies list
-            //    auto& enemies = map1.getEnemies();
-            //    enemies[count] = enemy;
-            //}
+            ENEMY = enemy.getCurr();
 
-            pathIndex++;
-            _ENEMY = enemy.getCurr();
+            // Lock mutex to safely update the enemy's position in the list
+            {
+                std::lock_guard<std::mutex> lock(enemyMutex); // Lock to safely update the enemies list
+                enemies[count] = enemy;
 
-            if (_ENEMY == path.back()) {
+                
+
+                for (auto& tower : towers)
                 {
-                    std::lock_guard<std::mutex> lock(printMtx);
-                    ctool::Draw((char*)" ", pathIndex - 1, path, _ENEMY); // Remove enemy from path
+                    auto path = map1.createBulletPath(tower, enemies);
+                    
+                    // cout << path.size();
+                    if (path.empty())
+                    {
+                        continue; // No valid path, cannot create bullet
+                    }
+
+                    //// Create a new bullet and add it to the map's bullet list
+                    cbullet newBullet(1, path[0], 50, path, 0, true);
+
+                    // Add the bullet to the map's list of bullets safely
+
+                    //     // Lock for thread safety
+                    map1.addBulletToList(newBullet);
+
+                    //// Launch a thread to handle the bullet movement
+                    bullet_threads.push_back(std::thread(&cgame::bulletMovement, this, ref(newBullet), newBullet.getPath()));
                 }
-                break;
             }
 
-            //// Check for towers to fire bullets
-            //{
-            //    std::lock_guard<std::mutex> lock(gameMutex);
-            //    auto& enemies = map1.getEnemies();
-            //    auto& towers = map1.getTowers();
-            //    for (auto& tower : towers) {
-            //        addBullet(map1, tower, enemies);
-            //    }
-            //}
-
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000 / enemy.getSpeed()));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
             {
                 std::lock_guard<std::mutex> lock(printMtx);
-                ctool::Draw((char*)" ", pathIndex - 1, path, _ENEMY); // Remove previous enemy from path
+                ctool::Draw((char*)" ", pathIndex - 1, path, ENEMY); // Remove previous enemy from path
             }
         }
     }
+    for (int i = 0; i < bullet_threads.size(); i++)
+        bullet_threads[i].join();
 }
 
-void cgame::bulletMovement(cbullet& bullet, std::vector<cenemy>& enemies) {
+void cgame::bulletMovement(cbullet& bullet, vector<cpoint> path) 
+{
     vector<cmap> mapList = getMap();
     cmap& map1 = mapList[0];
 
-    vector<cpoint> bulletPath = bullet.getPath();
-    cpoint bulletPos = bullet.getCurr();
+    //vector<cpoint> bulletPath = bullet.getPath();
+    cpoint BULLET = bullet.getCurr();
     int bulletIndex = 0;
 
+    //cout << bulletPath.size();
     while (!_ISEXIT1 && bullet.isActive()) {
-        if (bulletIndex < bulletPath.size()) {
+        if (bulletIndex < path.size() - 1) {
             {
                 std::lock_guard<std::mutex> lock(printMtx);
-                ctool::Draw((char*)"\033[34mo\033[0m", bulletIndex, bulletPath, bulletPos); // Draw bullet
+                ctool::Draw((char*)"\033[34mo\033[0m", bulletIndex, path, BULLET); // Draw bullet
             }
 
-            bullet.setCurr(bulletPath[bulletIndex]);
-            bulletIndex++;
-            bulletPos = bullet.getCurr();
+            bullet.setCurr(path[bulletIndex++]);
+            // bulletIndex++;
+            BULLET = bullet.getCurr();
 
-            // Check for collision with enemies
+        //    // Check for collision with enemies
             {
-                //std::lock_guard<std::mutex> lock(enemyMutex); // Protect access to enemies list
-                for (auto& enemy : enemies) {
-                    if (bulletPos == enemy.getCurr()) {
+                std::lock_guard<std::mutex> lock(enemyMutex); // Protect access to enemies list
+
+                for (auto& enemy : map1.getEnemies()) {
+                    if (BULLET == enemy.getCurr()) {
                         {
                             std::lock_guard<std::mutex> lock(printMtx);
-                            ctool::Draw((char*)" ", bulletIndex - 1, bulletPath, bulletPos); // Remove bullet
+                            
+                            ctool::Draw((char*)" ", bulletIndex - 1, path, BULLET); // Remove bullet
                         }
                         setIsExist1(true); // Bullet hits an enemy
                         bullet.setIsActive(false); // Disable bullet
@@ -179,18 +181,18 @@ void cgame::bulletMovement(cbullet& bullet, std::vector<cenemy>& enemies) {
                 }
             }
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(200 / bullet.getSpeed()));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
-            // Clear bullet's previous position
+        // Clear bullet's previous position
             {
                 std::lock_guard<std::mutex> lock(printMtx);
-                ctool::Draw((char*)" ", bulletIndex - 1, bulletPath, bulletPos);
+                ctool::Draw((char*)"+", bulletIndex - 1, path, BULLET);
             }
         }
         else {
             {
                 std::lock_guard<std::mutex> lock(printMtx);
-                ctool::Draw((char*)" ", bulletIndex - 1, bulletPath, bulletPos); // Clear bullet's last position
+                ctool::Draw((char*)"+", bulletIndex - 1, path, BULLET); // Clear bullet's last position
             }
             bullet.setIsActive(false); // Bullet no longer active
             return;

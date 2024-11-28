@@ -36,7 +36,7 @@ public:
     vector<cpoint> getPath() const;
     void setPath(const vector<cpoint>& path);
 
-    void updateStatus();
-    bool checkCollisionWithEnemy(const vector<cenemy>& enemies);
-    void move(vector<cenemy>& enemies);
+    //void updateStatus();
+    //bool checkCollisionWithEnemy(const vector<cenemy>& enemies);
+    //void move(vector<cenemy>& enemies);
 };

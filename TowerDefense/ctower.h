@@ -39,7 +39,8 @@ public:
     void setDamage(int damage);
 
     vector<Treach> getTreach() const;
-    void createTreach(const cenemy&);
+    void createTreach(const std::vector<cenemy>& enemies);
+    // void createTreach(const cenemy&);
 
     int calculateShootDirection(const vector<cenemy>& enemiesList, int& pathIndex) const;
 };

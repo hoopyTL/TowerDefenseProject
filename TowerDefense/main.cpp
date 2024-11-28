@@ -8,6 +8,6 @@ int main() {
 
     cg.processGame();  // All game logic is now handled in the cgame class
 
-    ctool::GotoXY(0, 40);  // Move to the last line before exiting
+    ctool::GotoXY(0, 54);  // Move to the last line before exiting
     return 0;
 }

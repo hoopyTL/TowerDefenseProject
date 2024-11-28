@@ -8,8 +8,8 @@ cmap::cmap() {
 
 // Reset map data
 void cmap::resetMapData() {
-    for (int i = 0; i < cpoint::MAP_SIZE; i++) {
-        for (int j = 0; j < cpoint::MAP_SIZE; j++) {
+    for (int i = 0; i < cpoint::MAP_HEIGHT; i++) {
+        for (int j = 0; j < cpoint::MAP_WIDTH; j++) {
             _m[i][j] = cpoint(
                 cpoint::MAP_LEFT + j * cpoint::CELL_WIDTH + cpoint::X_OFFSET,
                 cpoint::MAP_TOP + i * cpoint::CELL_HEIGHT + cpoint::Y_OFFSET,
@@ -25,34 +25,52 @@ void cmap::makeMapData() {
     vector<cpoint> epath2;
 
     // Create enemy path
-    for (int i = 0; i <= 8; ++i) epath1.push_back(_m[0][i]);
-    for (int i = 1; i <= 11; ++i) epath1.push_back(_m[i][8]);
-    for (int i = 8; i <= 13; ++i) epath1.push_back(_m[11][i]);
+    for (int i = 0; i <= 8; ++i) 
+    {
+        epath1.push_back(_m[1][i]);
+        _m[1][i].setC(1);
+    }
+    for (int i = 2; i <= 11; ++i) 
+    {
+        epath1.push_back(_m[i][8]);
+        _m[i][8].setC(1);
+    }
+    for (int i = 9; i <= 13; ++i) 
+    {
+        epath1.push_back(_m[11][i]);
+        _m[11][i].setC(1);
+    }
 
     /*for (int i = 0; i <= 7; ++i) epath2.push_back(_m[1][i]);
     for (int i = 2; i <= 12; ++i) epath2.push_back(_m[i][7]);
     for (int i = 7; i <= 13; ++i) epath2.push_back(_m[12][i]);*/
 
     // Add enemy
-    cenemy enemy1(2, 100, _m[1][0], epath1, 0);
+    cenemy enemy1(2, 100, _m[1][0], epath1, 0, true);
     _ce.push_back(enemy1);
 
-    cenemy enemy2(2, 100, _m[0][0], epath1, 0);
+    cenemy enemy2(2, 100, _m[1][0], epath1, 0, true);
     _ce.push_back(enemy2);
 
     // Add tower
     ctower tower1(_m[6][3], 50, vector<Treach>{});
-    tower1.createTreach(_ce[0]);
+    tower1.createTreach(_ce);
     _ctw.push_back(tower1);
+
+    // Add tower
+    ctower tower2(_m[8][12], 50, vector<Treach>{});
+    tower2.createTreach(_ce);
+    _ctw.push_back(tower2);
 }
 
 // Draw map
 void cmap::drawMap() {
     // Draw map grid
-    for (int i = 0; i < cpoint::MAP_SIZE; i++) {
-        for (int j = 0; j < cpoint::MAP_SIZE; j++) {
+    for (int i = 0; i < cpoint::MAP_HEIGHT; i++) {
+        for (int j = 0; j < cpoint::MAP_WIDTH; j++) {
             ctool::GotoXY(_m[i][j].getX(), _m[i][j].getY());
             if (_m[i][j].getC() == 0) cout << '+';
+            else cout << ' ';
         }
     }
 
@@ -80,6 +98,7 @@ vector<cpoint> cmap::createBulletPath(ctower tower, const vector<cenemy>& enemie
     int rowTower = towerPos.getX(), colTower = towerPos.getY();
     int rowTarget = target.getX(), colTarget = target.getY();
 
+    // bpath.push_back(_m[rowTower][colTower]);
     while (rowTower != rowTarget || colTower != colTarget) {
         switch (direction) {
         case UP_LEFT:     rowTower--; colTower--; break;
@@ -93,7 +112,7 @@ vector<cpoint> cmap::createBulletPath(ctower tower, const vector<cenemy>& enemie
         }
         bpath.push_back(_m[rowTower][colTower]);
     }
-    bpath.push_back(_m[rowTower][colTower]);
+    // bpath.push_back(_m[rowTower][colTower]);
 
     return bpath;
 }
