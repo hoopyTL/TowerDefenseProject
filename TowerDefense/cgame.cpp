@@ -82,7 +82,7 @@ void cgame::enemyMovement(cenemy& enemy, int count) {
     // cout << enemyIndex;
     cpoint ENEMY = enemy.getCurr();
 
-    int delaySteps = 4;
+    int delaySteps = 8;
     int delayTime = delaySteps * 500; // Delay between movements
     std::this_thread::sleep_for(std::chrono::milliseconds(count * delayTime));
 

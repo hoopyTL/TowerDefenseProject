@@ -55,11 +55,13 @@ void cmap::makeMapData() {
     // Add tower
     ctower tower1(_m[6][3], 50, vector<Treach>{});
     tower1.createTreach(_ce);
+
     _ctw.push_back(tower1);
 
     // Add tower
     ctower tower2(_m[8][12], 50, vector<Treach>{});
     tower2.createTreach(_ce);
+
     _ctw.push_back(tower2);
 }
 
