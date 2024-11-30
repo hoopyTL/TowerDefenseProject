@@ -125,23 +125,6 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int indexEnemy) {
     {
         if (enemy.isAlive() == true)
         {
-            for (int i = 0; i < bullet_threads.size(); i++)
-            {
-                if (bulletThreadStatus[i] == true)
-                {
-                    bulletThreadStatus[i] = false;
-                    cntHit++;
-
-                    enemy.decreaseHealth(damage);
-
-                    enemy.setCntHit(cntHit);
-                    if (enemy.getHealth() <= 0)
-                    {
-                        enemy.setAlive(false);
-                        break;
-                    }
-                }
-            }
             {
                 lock_guard<mutex> lock(printMtx);
                 if (enemy.getCntHit() == 0)
@@ -197,6 +180,25 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int indexEnemy) {
                 tmp = " ";
                 ctool::Draw(tmp, enemyIndex - 1, path, ENEMY);
             }
+
+            for (int i = 0; i < bullet_threads.size(); i++)
+            {
+                if (bulletThreadStatus[i] == true)
+                {
+                    bulletThreadStatus[i] = false;
+                    cntHit++;
+
+                    enemy.decreaseHealth(damage);
+
+                    enemy.setCntHit(cntHit);
+                    if (enemy.getHealth() <= 0)
+                    {
+                        enemy.setAlive(false);
+                        break;
+                    }
+                }
+            }
+
         }
         else
         {
