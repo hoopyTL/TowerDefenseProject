@@ -4,9 +4,9 @@
 class cgame 
 {
 private:
-    vector<cmap> _map; // Sử dụng unique_ptr cho cmap
+    vector<cmap> _map; 
     bool _ISEXIT1, _ISEXIT2;
-    bool _isRunning;  // Flag to manage game state
+    bool _isRunning;  
 
 public:
     cgame() : _ISEXIT1(false), _ISEXIT2(false), _isRunning(true) {}
@@ -17,19 +17,14 @@ public:
     bool getIsExist2() const { return _ISEXIT2; }
     void setIsExist2(bool b) { _ISEXIT2 = b; }
 
-    void addMap(cmap map);
+    void addMap(const cmap& map);
 
-    vector<cmap> getMap() { return _map; }
+    vector<cmap>& getMap() { return _map; }
 
     void startGame();
-    //bool addBullet(cmap& map, ctower& tower, const vector<cenemy>& enemiesList);
-    // Process the game logic including multi-threaded parts
     void processGame();
 
-    // Game state update logic (win/loss checking)
     void gameStateUpdate();
-    void enemyMovement(cenemy& enemy, int count);
-    void bulletMovement(cbullet& bullet, vector<cpoint> path);
-    //void bulletMovement(std::shared_ptr<cbullet> bullet, std::vector<cenemy>& enemies);
-    //void bulletMovement(cbullet& bullet);
+    void enemyMovement(cenemy& enemy, int mapIndex, int count);
+    void bulletMovement(cbullet& bullet, vector<cpoint> path, int mapIndex);
 };

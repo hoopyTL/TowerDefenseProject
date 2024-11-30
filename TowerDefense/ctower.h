@@ -30,17 +30,16 @@ private:
     vector<Treach> _treach;
 public:
     ctower();
-    ctower(const cpoint& tpos, int damage, vector<Treach> treach);
+    ctower(cpoint tpos, int damage);
 
     cpoint getCurr() const;
-    void setCurr(const cpoint& pos);
-
     int getDamage() const;
+    vector<Treach> getTreach() const;
+
+    void setCurr(const cpoint& pos);
     void setDamage(int damage);
 
-    vector<Treach> getTreach() const;
-    void createTreach(const std::vector<cenemy>& enemies);
-    // void createTreach(const cenemy&);
+    void createTreach(const vector<cenemy>& enemies);
 
     int calculateShootDirection(const vector<cenemy>& enemiesList, int& pathIndex) const;
 };

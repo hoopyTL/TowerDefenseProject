@@ -11,32 +11,22 @@ private:
     cpoint _bpos;
     int _damage;
     vector<cpoint> _bpath;
-    int _index;
     bool _isActive;
 
 public:
     cbullet();
-    cbullet(int speed, cpoint pos, int damage, vector<cpoint> path, int index, bool isActive);
+    cbullet(int speed, cpoint pos, int damage, vector<cpoint> path, bool isActive);
 
     cpoint getCurr() const;
-    void setCurr(cpoint pos);
-
     int getSpeed() const;
-    void setSpeed(int speed);
-
     int getDamage() const;
-    void setDamage(int damage);
-
-    int getIndex() const;
-    void setIndex(int index);
-
     bool isActive() const;
+
+    void setCurr(cpoint pos);
+    void setSpeed(int speed);
+    void setDamage(int damage);
     void setIsActive(bool active);
 
-    vector<cpoint> getPath() const;
+    vector<cpoint>& getPath();
     void setPath(const vector<cpoint>& path);
-
-    //void updateStatus();
-    //bool checkCollisionWithEnemy(const vector<cenemy>& enemies);
-    //void move(vector<cenemy>& enemies);
 };

@@ -112,13 +112,15 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int count) {
 
     vector<thread> bullet_threads;
 
+    // vector<cbullet> bullets;
+
     for (int enemyIndex = 0; enemyIndex < path.size();)
     {
         {
             std::lock_guard<std::mutex> lock(printMtx);
             ctool::Draw((char*)"\033[32mE\033[0m", enemyIndex, path, ENEMY); // Draw enemy
         }
-
+            
         enemy.setCurr(path[enemyIndex]);
         enemy.setIndex(enemyIndex++);
 
@@ -128,15 +130,15 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int count) {
             std::lock_guard<std::mutex> lock(enemyMutex);
             enemies[count] = enemy;
 
-
+                
 
             for (auto& tower : towers)
             {
                 auto path = map.createBulletPath(tower, enemies);
-
+                    
                 if (path.empty())
                 {
-                    continue;
+                    continue; 
                 }
 
                 cbullet newBullet(1, path[0], 50, path, true);
@@ -155,7 +157,6 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int count) {
             ctool::Draw((char*)" ", enemyIndex - 1, path, ENEMY);
         }
     }
-
 
 
     for (int i = 0; i < bullet_threads.size(); i++)
@@ -196,10 +197,6 @@ void cgame::bulletMovement(cbullet& bullet, vector<cpoint> path, int mapIndex)
                 if (bulletPos.getC() == 1)
                     ctool::Draw((char*)" ", bulletIndex - 1, path, BULLET);
             }
-        }
-        if (bulletIndex == path.size() - 1)
-        {
-            //enemy.setAlive(false);
         }
     }
     

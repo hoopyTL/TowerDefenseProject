@@ -1,9 +1,22 @@
 #include "cpoint.h"
 
-cpoint& cpoint::operator=(const cpoint& other) {
+cpoint::cpoint() : x(0), y(0), c(0) {}
+cpoint::cpoint(int tx, int ty, int tc) : x(tx), y(ty), c(tc) {}
+
+int cpoint::getX() const { return x; }
+int cpoint::getY() const { return y; }
+int cpoint::getC() const { return c; }
+
+void cpoint::setX(int tx) { x = tx; }
+void cpoint::setY(int ty) { y = ty; }
+void cpoint::setC(int tc) { c = tc; }
+
+cpoint& cpoint::operator=(const cpoint& other) 
+{
     if (this != &other) {
-        this->x = other.x;
-        this->y = other.y;
+        x = other.x;
+        y = other.y;
+        c = other.c;
     }
     return *this;
 }
@@ -25,22 +38,6 @@ cpoint cpoint::fromRowColToXY(const cpoint& gridPoint) {
         CELL_HEIGHT * gridPoint.x + Y_OFFSET + MAP_TOP,
         gridPoint.c
     };
-}
-
-// In cpoint class
-double cpoint::distanceTo(const cpoint& other) const {
-    // Calculate the difference in x and y coordinates
-    int dx = (this->x - other.x);
-    int dy = (this->y - other.y);
-
-    // Adjust the distance based on the scaling factors, if necessary
-    // If you're calculating in a grid with specific scaling (e.g., non-square cells),
-    // you may need to account for `CELL_WIDTH` and `CELL_HEIGHT`
-    double scaledDx = dx / (double)cpoint::CELL_WIDTH;
-    double scaledDy = dy / (double)cpoint::CELL_HEIGHT;
-
-    // Use the Euclidean distance formula
-    return sqrt(scaledDx * scaledDx + scaledDy * scaledDy);
 }
 
 int cpoint::countSteps(cpoint other) 

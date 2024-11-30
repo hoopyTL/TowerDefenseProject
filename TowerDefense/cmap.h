@@ -15,27 +15,29 @@ private:
 
     int _height;
     int _width;
-    cpoint _m[cpoint::MAP_HEIGHT][cpoint::MAP_WIDTH];
-
+    vector<vector<cpoint>> _m;
+    int _level;
 
 public:
-    cmap();
+    cmap(int);
     void resetMapData();
     void makeMapData();
     void drawMap();
 
-    int getHeight() { return _height; }
-    int getWidth() { return _width; }
+    int getHeight() const;
+    int getWidth() const;
+    int getLevel() const;
 
-    vector<cenemy>& getEnemies() { return _ce; }
-    vector<ctower>& getTowers() { return _ctw; }
-    vector<cbullet>& getBullets() { return _cb; }
+    void setHeight(int height);
+    void setWidth(int width);
+    void setLevel(int level);
 
-    vector<cpoint> createBulletPath(ctower tower, const vector<cenemy>& enemiesList);
-    // bool addBullet(ctower&, const vector<cenemy>& enemiesList);
+    vector<cenemy>& getEnemies();
+    vector<ctower>& getTowers();
+    vector<cbullet>& getBullets();
+    vector<vector<cpoint>>& getRealMap();
 
-    void addBulletToList(const cbullet& newBullet);
+    vector<cpoint> createBulletPath(const ctower& tower, const vector<cenemy>& enemiesList);
 
-    // void updateEnemies();
-    // void updateBullets();
+    void addBullet(const cbullet& newBullet);
 };

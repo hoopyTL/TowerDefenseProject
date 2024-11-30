@@ -1,9 +1,9 @@
 ﻿#include "cenemy.h"
 
-cenemy::cenemy() :_speed(0), _health(100), _epos(cpoint()), _epath({}), _index(0), _isAlive(true), _isHit(false) {}
+cenemy::cenemy() :_speed(0), _health(100), _epos(cpoint()), _epath({}), _index(0), _isAlive(true) {}
 
-cenemy::cenemy(int speed, int health, cpoint pos, vector <cpoint> path, int index, bool isAlive, bool isHit)
-    : _speed(speed), _health(health), _epos(pos), _epath(path), _index(index), _isAlive(isAlive), _isHit(isHit) {}
+cenemy::cenemy(int speed, int health, cpoint pos, vector <cpoint> path, int index, bool isAlive)
+    : _speed(speed), _health(health), _epos(pos), _epath(path), _index(index), _isAlive(isAlive) {}
 
 // cenemy::cenemy(cenemy other) : cenemy(other.speed, other.health, other.pos, other.path, other.index, other.isAlive)
 

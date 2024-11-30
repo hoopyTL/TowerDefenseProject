@@ -74,10 +74,10 @@ void cmap::makeMapData()
                 _m[9][i].setC(1);
             }
 
-            cenemy enemy1(2, 100, _m[2][0], epath1, 0, true, false);
+            cenemy enemy1(2, 100, _m[2][0], epath1, 0, true);
             _ce.push_back(enemy1);
 
-            cenemy enemy2(2, 100, _m[2][0], epath1, 0, true, false);
+            cenemy enemy2(2, 100, _m[2][0], epath1, 0, true);
             _ce.push_back(enemy2);
 
             ctower tower1(_m[5][3], 50);
@@ -111,10 +111,10 @@ void cmap::makeMapData()
             }
 
             // Add enemy to map 2
-            cenemy enemy1(2, 100, _m[2][0], epath1, 0, true, false);
+            cenemy enemy1(2, 100, _m[2][0], epath1, 0, true);
             _ce.push_back(enemy1);
 
-            cenemy enemy2(2, 100, _m[2][0], epath1, 0, true, false);
+            cenemy enemy2(2, 100, _m[2][0], epath1, 0, true);
             _ce.push_back(enemy2);
 
             // Add tower to map 2
@@ -149,10 +149,10 @@ void cmap::makeMapData()
             }
 
             // Add enemy to map 3
-            cenemy enemy1(3, 100, _m[3][0], epath1, 0, true, false);
+            cenemy enemy1(3, 100, _m[3][0], epath1, 0, true);
             _ce.push_back(enemy1);
 
-            cenemy enemy2(3, 100, _m[3][0], epath1, 0, true, false);
+            cenemy enemy2(3, 100, _m[3][0], epath1, 0, true);
             _ce.push_back(enemy2);
 
             // Add tower to map 3
@@ -188,10 +188,10 @@ void cmap::makeMapData()
             }
 
             // Add enemy to map 4
-            cenemy enemy1(4, 100, _m[4][0], epath1, 0, true, false);
+            cenemy enemy1(4, 100, _m[4][0], epath1, 0, true);
             _ce.push_back(enemy1);
 
-            cenemy enemy2(4, 100, _m[4][0], epath1, 0, true, false);
+            cenemy enemy2(4, 100, _m[4][0], epath1, 0, true);
             _ce.push_back(enemy2);
 
             // Add tower to map 4

@@ -5,8 +5,7 @@
 
 using namespace std;
 
-class cenemy 
-{
+class cenemy {
 private:
     //std::mutex enemyMutex;
     int _speed;                   // Tốc độ di chuyển
@@ -15,12 +14,11 @@ private:
     vector<cpoint> _epath;        // Đường đi
     int _index;                   // Vị trí hiện tại trên đường đi
     bool _isAlive;                // Trạng thái sống/chết
-    bool _isHit;
 
 public:
     // Constructors
     cenemy();
-    cenemy(int speed, int health, cpoint pos, vector<cpoint> path, int index, bool isAlive, bool isHit);
+    cenemy(int speed, int health, cpoint pos, vector<cpoint> path, int index, bool isAlive);
 
     // Getters
     int getSpeed() const;

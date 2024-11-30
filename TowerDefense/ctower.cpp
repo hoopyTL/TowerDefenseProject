@@ -3,20 +3,21 @@
 
 ctower::ctower() : _tpos(0, 0, 0), _damage(0), _treach({}) {}
 
-ctower::ctower(const cpoint& tpos, int damage, vector<Treach> treach) : _tpos(tpos), _damage(damage), _treach(treach) {}
+ctower::ctower(cpoint pos, int damage) : _tpos(pos), _damage(damage) {}
 
 cpoint ctower::getCurr() const 
 {
     return _tpos;
 }
 
+int ctower::getDamage() const 
+{
+    return _damage;
+}
+
 void ctower::setCurr(const cpoint& pos) 
 {
     _tpos = pos;
-}
-
-int ctower::getDamage() const {
-    return _damage;
 }
 
 void ctower::setDamage(int damage) 
@@ -29,8 +30,9 @@ vector<Treach> ctower::getTreach() const
     return _treach;
 }
 
-void ctower::createTreach(const std::vector<cenemy>& enemies) {
-    _treach.clear(); // Xóa danh sách mục tiêu trước đó
+void ctower::createTreach(const vector<cenemy>& enemies) 
+{
+    _treach.clear();
 
     if (enemies.empty()) return; // Không có enemy nào thì thoát sớm
 
@@ -52,10 +54,11 @@ void ctower::createTreach(const std::vector<cenemy>& enemies) {
 
             // Kiểm tra nếu điểm này có nằm trong phạm vi của tháp
             if (rowTower == rowPath || colTower == colPath || abs(rowTower - rowPath) == abs(colTower - colPath)) {
-                // Kiểm tra xem điểm này đã tồn tại trong _treach hay chưa
                 bool exists = false;
-                for (const auto& target : _treach) {
-                    if (target.point == enemyPath[i]) { // So sánh điểm đường đi
+                for (const auto& target : _treach) 
+                {
+                    if (target.point == enemyPath[i]) 
+                    { 
                         exists = true;
                         break;
                     }
@@ -73,7 +76,6 @@ void ctower::createTreach(const std::vector<cenemy>& enemies) {
 
 int ctower::calculateShootDirection(const vector<cenemy>& enemiesList, int &treachIndex) const
 {
-
     // Lấy tọa độ của tháp trong hệ lưới
     cpoint towerPoint = cpoint::fromXYToRowCol(_tpos);  // Chuyển đổi sang hệ lưới
     int rowTower = towerPoint.getX();
@@ -97,7 +99,6 @@ int ctower::calculateShootDirection(const vector<cenemy>& enemiesList, int &trea
         // Sử dụng trực tiếp 'step' từ Treach
         int bulletStep = treachPoint.step;
 
-
         // Kiểm tra sự trùng khớp của chỉ số trên đường đi của kẻ thù và bước viên đạn
         for (const auto& enemy : enemiesList)
         {
@@ -109,8 +110,7 @@ int ctower::calculateShootDirection(const vector<cenemy>& enemiesList, int &trea
             // Nếu bước viên đạn và bước của kẻ thù trùng nhau, tìm hướng bắn
             if (enemyStep == bulletStep)
             {
-                // cout << "(" << rowReach << "," << colReach << ")";
-                // cout << bulletStep;
+                
                 // Determine shooting direction based on coordinate difference
                 if (rowReach < rowTower && colReach < colTower)
                     return UP_LEFT;  // Diagonal Up-Left

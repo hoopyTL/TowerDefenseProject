@@ -104,7 +104,7 @@ void ctool::printMenu()
 
     system("cls");
     std::cout << "Loading menu...\n";
-    Sleep(500);
+    Sleep(200);
 
     int menu_option;
 
@@ -126,7 +126,7 @@ void ctool::printMenu()
         {
             system("cls");
             std::cout << "Starting game...\n";
-            Sleep(500); // delay 1 second
+            Sleep(200); // delay 1 second
             system("cls");
             cout << "Press any key to start demo: ";
             cin.get();
