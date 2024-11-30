@@ -5,7 +5,7 @@ cmap::cmap(int level)
 {
     setLevel(level);
     setHeight(cpoint::MAP_HEIGHT + (level - 1));
-    setWidth(cpoint::MAP_WIDTH + 5 * (level - 1));
+    setWidth(cpoint::MAP_WIDTH + 3 * (level - 1));
 
     _m.resize(_height);
 
@@ -25,6 +25,21 @@ int cmap::getLevel() const { return _level; }
 void cmap::setHeight(int height) {  _height = height; }
 void cmap::setWidth(int width) { _width = width; }
 void cmap::setLevel(int level)  {  _level = level; }
+
+void cmap::addEnemy(const cenemy& enemy)
+{
+    _ce.push_back(enemy);
+}
+
+void cmap::addTower(const ctower& tower)
+{
+    _ctw.push_back(tower);
+}
+
+void cmap::addBullet(const cbullet& bullet)
+{
+    _cb.push_back(bullet);
+}
 
 vector<cenemy>& cmap::getEnemies() { return _ce; }
 vector<ctower>& cmap::getTowers() { return _ctw; }
@@ -75,21 +90,19 @@ void cmap::makeMapData()
             }
 
             cenemy enemy1(2, 100, _m[2][0], epath1, 0, true, false);
-            _ce.push_back(enemy1);
-
             cenemy enemy2(2, 100, _m[2][0], epath1, 0, true, false);
-            _ce.push_back(enemy2);
+
+            addEnemy(enemy1);
+            addEnemy(enemy2);
 
             ctower tower1(_m[5][3], 50);
             tower1.createTreach(_ce);
 
-            _ctw.push_back(tower1);
-
-            // Add tower
-            ctower tower2(_m[7][15], 50);
+            ctower tower2(_m[4][15], 50);
             tower2.createTreach(_ce);
 
-            _ctw.push_back(tower2);
+            addTower(tower1);
+            addTower(tower2);
 
             break;
         }
@@ -112,22 +125,31 @@ void cmap::makeMapData()
 
             // Add enemy to map 2
             cenemy enemy1(2, 100, _m[2][0], epath1, 0, true, false);
-            _ce.push_back(enemy1);
-
             cenemy enemy2(2, 100, _m[2][0], epath1, 0, true, false);
-            _ce.push_back(enemy2);
+            cenemy enemy3(2, 100, _m[2][0], epath1, 0, true, false);
+            cenemy enemy4(2, 100, _m[2][0], epath1, 0, true, false);
 
-            // Add tower to map 2
-            ctower tower1(_m[7][5], 50);
+            addEnemy(enemy1);
+            addEnemy(enemy1);
+            addEnemy(enemy1);
+            addEnemy(enemy1);
+
+            ctower tower1(_m[6][2], 50);
             tower1.createTreach(_ce);
 
-            _ctw.push_back(tower1);
-
-            // Add another tower
-            ctower tower2(_m[9][15], 50);
+            ctower tower2(_m[7][16], 50);
             tower2.createTreach(_ce);
 
-            _ctw.push_back(tower2);
+            ctower tower3(_m[1][13], 50);
+            tower3.createTreach(_ce);
+
+            ctower tower4(_m[11][4], 50);
+            tower4.createTreach(_ce);
+
+            addTower(tower1);
+            addTower(tower2);
+            addTower(tower3);
+            addTower(tower4);
 
             break;
         }
@@ -156,13 +178,13 @@ void cmap::makeMapData()
             _ce.push_back(enemy2);
 
             // Add tower to map 3
-            ctower tower1(_m[5][6], 50);
+            ctower tower1(_m[5][16], 50);
             tower1.createTreach(_ce);
 
             _ctw.push_back(tower1);
 
             // Add another tower
-            ctower tower2(_m[10][12], 50);
+            ctower tower2(_m[12][11], 50);
             tower2.createTreach(_ce);
 
             _ctw.push_back(tower2);
@@ -231,8 +253,9 @@ void cmap::drawMap() {
     // Draw towers
     for (const auto& tower : _ctw) 
     {
+        
         ctool::GotoXY(tower.getCurr().getX(), tower.getCurr().getY());
-        cout << "\033[31mT\033[0m";
+        cout << TEXT_BRIGHT_RED << "T" << RESET_COLOR;
     }
 }
 
@@ -270,9 +293,4 @@ vector<cpoint> cmap::createBulletPath(const ctower& tower, const vector<cenemy>&
     }
 
     return bpath;
-}
-
-void cmap::addBullet(const cbullet& bullet) 
-{
-    _cb.push_back(bullet);
 }

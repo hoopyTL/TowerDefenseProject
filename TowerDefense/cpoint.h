@@ -8,13 +8,13 @@ class cpoint {
 public:
     // Constants and data
     const static int MAP_HEIGHT = 11; // Map matrix size
-    const static int MAP_WIDTH = 20; // Map matrix size
+    const static int MAP_WIDTH = 18; // Map matrix size
 
     const static int MAP_LEFT = 3;      // Left-coordinates of the map screen
     const static int MAP_TOP = 0;       // Top-coordinates of the map screen
 
     // Constants for grid calculations
-    const static int CELL_WIDTH = 3;
+    const static int CELL_WIDTH = 4;
     const static int CELL_HEIGHT = 2;  // Vertical distance between rows
     const static int X_OFFSET = 1;      // Adjustment for X coordinate in grid
     const static int Y_OFFSET = 1;      // Adjustment for Y coordinate in grid

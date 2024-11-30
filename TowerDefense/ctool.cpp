@@ -17,11 +17,11 @@ void ctool::GotoXY(int x, int y) {
     SetConsoleCursorPosition(consoleOutput, crd);
 }
 
-void ctool::Draw(const char* str, int i, const vector<cpoint>& p, cpoint& _p) {
+void ctool::Draw(string str, int i, const vector<cpoint>& p, cpoint& _p) {
     std::lock_guard<std::mutex> lock(mtx);
     _p = p[i];
     ctool::GotoXY(_p.getX(), _p.getY());
-    cout << str;
+    cout << str << RESET_COLOR;
 }
 
 
@@ -42,7 +42,7 @@ void ctool::printLogo() {
     int consoleHeight = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
 
     
-    setColor(WHITE, RED);
+    setColor(BG_WHITE, BG_RED);
 
    
     int yPosStart = (consoleHeight / 2) - 5;
@@ -113,7 +113,7 @@ void ctool::printMenu()
         system("cls");
 
         std::cout << "-----PRESS A NUMBER TO CONTINUE-----\n";
-        setColor(BLACK, LIGHT_YELLOW);
+        setColor(BG_BLACK, BG_LIGHT_YELLOW);
         std::cout << "  1.PLAY\n";
         std::cout << "  2.SAVE\n";
         std::cout << "  3.SETTING\n";

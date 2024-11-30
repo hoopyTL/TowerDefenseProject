@@ -48,6 +48,8 @@ void cgame::processGame()
 
     system("cls");
 
+    // SetConsoleTextAttribute(consoleOutput);
+
     int mapIndex = choice - 1;
 
     _map[mapIndex].drawMap();
@@ -106,7 +108,7 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int count) {
     vector<cpoint> path = enemy.getPath();
     cpoint ENEMY = enemy.getCurr();
 
-    int delaySteps = 3;
+    int delaySteps = 4;
     int delayTime = delaySteps * 500; 
     std::this_thread::sleep_for(std::chrono::milliseconds(count * delayTime));
 
@@ -116,7 +118,9 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int count) {
     {
         {
             std::lock_guard<std::mutex> lock(printMtx);
-            ctool::Draw((char*)"\033[32mE\033[0m", enemyIndex, path, ENEMY); // Draw enemy
+            cout << TEXT_GREEN;
+            string enenmyChar = "E";
+            ctool::Draw(enenmyChar, enemyIndex, path, ENEMY);
         }
 
         enemy.setCurr(path[enemyIndex]);
@@ -127,7 +131,6 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int count) {
         {
             std::lock_guard<std::mutex> lock(enemyMutex);
             enemies[count] = enemy;
-
 
 
             for (auto& tower : towers)
@@ -179,7 +182,9 @@ void cgame::bulletMovement(cbullet& bullet, vector<cpoint> path, int mapIndex)
         {
             {
                 std::lock_guard<std::mutex> lock(printMtx);
-                ctool::Draw((char*)"\033[34mo\033[0m", bulletIndex, path, BULLET);
+                cout << TEXT_BRIGHT_PURPLE;
+                string bulletChar = "o";
+                ctool::Draw(bulletChar, bulletIndex, path, BULLET);
             }
 
             bullet.setCurr(path[bulletIndex++]);
