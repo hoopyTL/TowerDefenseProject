@@ -8,39 +8,34 @@ using namespace std;
 class cenemy 
 {
 private:
-    //std::mutex enemyMutex;
-    int _speed;                   // Tốc độ di chuyển
-    int _health;                  // Máu của enemy
-    cpoint _epos;                 // Vị trí hiện tại
-    vector<cpoint> _epath;        // Đường đi
-    int _index;                   // Vị trí hiện tại trên đường đi
-    bool _isAlive;                // Trạng thái sống/chết
-    bool _isHit;
+    int _speed;                   
+    int _health;                  
+    cpoint _epos;                 
+    vector<cpoint> _epath;        
+    int _index;                   
+    bool _isAlive;                
+    int _cntHit;
 
 public:
     // Constructors
     cenemy();
-    cenemy(int speed, int health, cpoint pos, vector<cpoint> path, int index, bool isAlive, bool isHit);
+    cenemy(int speed, int health, cpoint pos, vector<cpoint> path);
 
-    // Getters
     int getSpeed() const;
     int getHealth() const;
     cpoint getCurr() const;
     vector<cpoint> getPath() const;
     int getIndex() const;
     bool isAlive() const;
+    int getCntHit() const;
 
-    // Setters
     void setSpeed(int tspeed);
     void setHealth(int thealth);
     void setCurr(cpoint pos);
     void setPath(const vector<cpoint>& path);
     void setIndex(int index);
     void setAlive(bool alive);
+    void setCntHit(int hit);
 
-    // Methods
     void decreaseHealth(int damage);
-    //void updateStatus();
-
-    //void move();
 };

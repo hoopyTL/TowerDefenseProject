@@ -1,11 +1,14 @@
 ﻿#include "cenemy.h"
 
-cenemy::cenemy() :_speed(0), _health(100), _epos(cpoint()), _epath({}), _index(0), _isAlive(true), _isHit(false) {}
+cenemy::cenemy() :_speed(0), _health(0), _epos(cpoint()), _epath({}), _index(0), _isAlive(true), _cntHit(0) {}
 
-cenemy::cenemy(int speed, int health, cpoint pos, vector <cpoint> path, int index, bool isAlive, bool isHit)
-    : _speed(speed), _health(health), _epos(pos), _epath(path), _index(index), _isAlive(isAlive), _isHit(isHit) {}
-
-// cenemy::cenemy(cenemy other) : cenemy(other.speed, other.health, other.pos, other.path, other.index, other.isAlive)
+cenemy::cenemy(int speed, int health, cpoint pos, vector <cpoint> path)
+    : _speed(speed), _health(health), _epos(pos), _epath(path) 
+{
+    _index = 0;
+    _isAlive = true;
+    _cntHit = 0;
+}
 
 // Getters
 int cenemy::getSpeed() const { return _speed; }
@@ -14,55 +17,42 @@ cpoint cenemy::getCurr() const { return _epos; }
 vector<cpoint> cenemy::getPath() const { return _epath; }
 int cenemy::getIndex() const { return _index; }
 bool cenemy::isAlive() const { return _isAlive; }
+int cenemy::getCntHit() const { return _cntHit; }
 
-// Setters
-void cenemy::setSpeed(int tspeed) 
+void cenemy::setSpeed(int speed) 
 { 
-    //std::lock_guard<std::mutex> lock(enemyMutex); 
-    _speed = tspeed;
+    _speed = speed;
 }
-void cenemy::setHealth(int thealth) { //std::lock_guard<std::mutex> lock(enemyMutex);     
-_health = thealth; }
-void cenemy::setCurr(cpoint pos) { //std::lock_guard<std::mutex> lock(enemyMutex);   
-_epos = pos; }
-void cenemy::setPath(const vector<cpoint>& path) { //std::lock_guard<std::mutex> lock(enemyMutex);    
-_epath = path; }
-void cenemy::setIndex(int index) { //std::lock_guard<std::mutex> lock(enemyMutex);    
-_index = index; }
-void cenemy::setAlive(bool alive) { //std::lock_guard<std::mutex> lock(enemyMutex);   
-_isAlive = alive; }
+void cenemy::setHealth(int health) 
+{   
+    _health = health; 
+}
+void cenemy::setCurr(cpoint pos) 
+{
+    _epos = pos; 
+}
+void cenemy::setPath(const vector<cpoint>& path) 
+{  
+    _epath = path; 
+}
+void cenemy::setIndex(int index) 
+{ 
+    _index = index; 
+}
+void cenemy::setAlive(bool alive) 
+{  
+    _isAlive = alive; 
+}
+
+void cenemy::setCntHit(int hit)
+{
+    _cntHit = hit;
+}
 
 void cenemy::decreaseHealth(int damage) 
 {
-    //std::lock_guard<std::mutex> lock(enemyMutex);
     _health -= damage;
 }
-
-//void cenemy::updateStatus() 
-//{
-//    if (_health <= 0 || _index >= _epath.size()) 
-//    {
-//        _isAlive = false;
-//    }
-//}
-//
-//void cenemy::move() {
-//    if (_isAlive) {
-//        if (_index < _epath.size()) {
-//            _epos = _epath[_index];
-//            _index += _speed;
-//
-//            // Ensure index does not go beyond path size
-//            if (_index >= _epath.size()) {
-//                _index = _epath.size() - 1;  // Prevents going past the last position
-//            }
-//        }
-//
-//        // Update enemy status (alive or dead)
-//        updateStatus();
-//    }
-//}
-
 
 
 

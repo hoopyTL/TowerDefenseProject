@@ -13,6 +13,7 @@ void ctool::ShowConsoleCursor(bool showFlag) {
 }
 
 void ctool::GotoXY(int x, int y) {
+
     COORD crd = { x, y };
     SetConsoleCursorPosition(consoleOutput, crd);
 }

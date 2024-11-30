@@ -1,20 +1,21 @@
 ﻿#include "cbullet.h"
 
 cbullet::cbullet()
-    : _speed(1), _bpos(cpoint()), _damage(0), _bpath({}), _isActive(true) {}
+    : _bpos(cpoint()), _damage(0), _bpath({}), _isActive(true) {}
 
-cbullet::cbullet(int speed, cpoint pos, int damage, vector<cpoint> path, bool isActive)
-    : _speed(speed), _bpos(pos), _damage(damage), _bpath(path), _isActive(isActive) {}
+cbullet::cbullet(cpoint pos, int damage, vector<cpoint> path)
+    : _bpos(pos), _damage(damage), _bpath(path) 
+{
+    _isActive = true;
+}
 
 cpoint cbullet::getCurr() const { return _bpos; }
-int cbullet::getSpeed() const { return _speed; }
 int cbullet::getDamage() const { return _damage; }
 bool cbullet::isActive() const { return _isActive; }
 
 void cbullet::setCurr(cpoint pos) { _bpos = pos; }
-void cbullet::setSpeed(int speed) { _speed = speed; }
 void cbullet::setDamage(int damage) { _damage = damage; }
-void cbullet::setIsActive(bool active) { _isActive = active; }
+void cbullet::setActive(bool active) { _isActive = active; }
 
 vector<cpoint>& cbullet::getPath()  { return _bpath; }
 void cbullet::setPath(const vector<cpoint>& path) { _bpath = path; }

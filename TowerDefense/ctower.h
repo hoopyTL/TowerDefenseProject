@@ -26,11 +26,10 @@ class ctower
 {
 private:
     cpoint _tpos;
-    int _damage;
     vector<Treach> _treach;
 public:
     ctower();
-    ctower(cpoint tpos, int damage);
+    ctower(cpoint tpos);
 
     cpoint getCurr() const;
     int getDamage() const;

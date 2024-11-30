@@ -1,18 +1,13 @@
 ﻿#include "ctower.h"
 #include <iostream>
 
-ctower::ctower() : _tpos(0, 0, 0), _damage(0), _treach({}) {}
+ctower::ctower() : _tpos(0, 0, 0), _treach({}) {}
 
-ctower::ctower(cpoint pos, int damage) : _tpos(pos), _damage(damage) {}
+ctower::ctower(cpoint pos) : _tpos(pos) {}
 
 cpoint ctower::getCurr() const 
 {
     return _tpos;
-}
-
-int ctower::getDamage() const 
-{
-    return _damage;
 }
 
 void ctower::setCurr(const cpoint& pos) 
@@ -20,10 +15,6 @@ void ctower::setCurr(const cpoint& pos)
     _tpos = pos;
 }
 
-void ctower::setDamage(int damage) 
-{
-    _damage = damage;
-}
 
 vector<Treach> ctower::getTreach() const
 {

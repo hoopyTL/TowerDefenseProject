@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "cmap.h"
+#include <thread>
 
 class cgame 
 {
@@ -26,5 +27,5 @@ public:
 
     void gameStateUpdate();
     void enemyMovement(cenemy& enemy, int mapIndex, int count);
-    void bulletMovement(cbullet& bullet, vector<cpoint> path, int mapIndex);
+    void bulletMovement(cbullet& bullet, vector<cpoint> path, int mapIndex, vector<bool>& bulletThreadStatus, int threadIndex, int enemySpeed);
 };

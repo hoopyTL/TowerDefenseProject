@@ -7,7 +7,6 @@ using namespace std;
 
 class cbullet {
 private:
-    int _speed;
     cpoint _bpos;
     int _damage;
     vector<cpoint> _bpath;
@@ -15,17 +14,15 @@ private:
 
 public:
     cbullet();
-    cbullet(int speed, cpoint pos, int damage, vector<cpoint> path, bool isActive);
+    cbullet(cpoint pos, int damage, vector<cpoint> path);
 
     cpoint getCurr() const;
-    int getSpeed() const;
     int getDamage() const;
     bool isActive() const;
 
     void setCurr(cpoint pos);
-    void setSpeed(int speed);
     void setDamage(int damage);
-    void setIsActive(bool active);
+    void setActive(bool active);
 
     vector<cpoint>& getPath();
     void setPath(const vector<cpoint>& path);
