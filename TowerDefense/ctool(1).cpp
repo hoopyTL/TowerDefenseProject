@@ -120,7 +120,7 @@ void ctool::printMenu()
         std::cout << "  3.SETTING\n";
         std::cout << "  4.EXIT\n";
         setDefaultColor();
-PlaySound(TEXT("background.wav", NULL, SND_FILENAME | SND_ASYNC | SND_LOOP));
+PlaySound(TEXT("background1.wav", NULL, SND_FILENAME | SND_ASYNC | SND_LOOP));
         menu_option = _getch();
 
         if (menu_option == '1')
