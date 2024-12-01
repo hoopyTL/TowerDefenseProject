@@ -14,13 +14,16 @@ class ctool
 {
 public:
     static mutex mtx;
-
+    static bool sound_is_open;
     static void ShowConsoleCursor(bool showFlag);
     static void GotoXY(int x, int y);
     static void Draw(string str, int i, const vector<cpoint>& path, cpoint& _p);
     static void printLogo();
     static bool printExit();
     static void printMenu();
+	static void Settings();
+    static void printAbout();
+    static void printRectangle(int, int, int, int);			
 };
 
 void setUpWindow();
