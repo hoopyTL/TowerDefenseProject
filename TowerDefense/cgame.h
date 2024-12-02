@@ -6,17 +6,16 @@ class cgame
 {
 private:
     vector<cmap> _map; 
-    bool _ISEXIT1, _ISEXIT2;
-    bool _isRunning;  
+    bool _ISEXIT;
 
 public:
-    cgame() : _ISEXIT1(false), _ISEXIT2(false), _isRunning(true) {}
+    cgame() : _ISEXIT(false) {}
 
-    bool getIsExist1() const { return _ISEXIT1; }
-    void setIsExist1(bool b) { _ISEXIT1 = b; }
+    bool getIsExist() const { return _ISEXIT; }
+    void setIsExist(bool b) { _ISEXIT = b; }
 
-    bool getIsExist2() const { return _ISEXIT2; }
-    void setIsExist2(bool b) { _ISEXIT2 = b; }
+    /*bool getIsExist2() const { return _ISEXIT2; }
+    void setIsExist2(bool b) { _ISEXIT2 = b; }*/
 
     void addMap(const cmap& map);
 

@@ -104,36 +104,61 @@ void cgame::processGame() {
         indexEnemy++;
     }
 
-    // Thread để cập nhật trạng thái game
-    std::thread gameStateThread(&cgame::gameStateUpdate, this);
-
-    // Đợi tất cả các thread di chuyển kẻ địch kết thúc
-    for (auto& t : enemyThreads) {
+    for (auto& t : enemyThreads) 
+    {
         if (t.joinable()) {
             t.join();
         }
     }
 
-    // Đợi thread cập nhật trạng thái game kết thúc
-    if (gameStateThread.joinable()) {
-        gameStateThread.join();
-    }
+    gameStateUpdate();
 }
-
 
 void cgame::gameStateUpdate() {
-    while (_isRunning && !_ISEXIT1)
+    if (_ISEXIT)
     {
-        if (getIsExist1())
-        {
-            system("cls");
-            lock_guard<mutex> lock(printMtx); // Synchronize game state updates
-            ctool::GotoXY(0, 20);
-            cout << "END GAME";
+        system("cls");
+        system("color 4F"); // Màu nền đỏ, chữ trắng
+
+        // Tọa độ trung tâm màn hình
+        int centerX = 40; // Tùy chỉnh tọa độ
+        int centerY = 12; // Tùy chỉnh tọa độ
+
+        // Vẽ chữ "END GAME" lớn
+        ctool::GotoXY(centerX - 18, centerY - 3);
+        std::cout << R"(███████╗███╗   ██╗██████╗       ██████╗  █████╗ ███╗   ███╗███████╗)";
+        ctool::GotoXY(centerX - 18, centerY - 2);
+        std::cout << R"(██╔════╝████╗  ██║██╔══██╗      ██╔══██╗██╔══██╗████╗ ████║██╔════╝)";
+        ctool::GotoXY(centerX - 18, centerY - 1);
+        std::cout << R"(█████╗  ██╔██╗ ██║██║  ██║█████╗██    ╔╝███████║██╔████╔██║█████╗  )";
+        ctool::GotoXY(centerX - 18, centerY);
+        std::cout << R"(██╔══╝  ██║╚██╗██║██║  ██║╚════╝██╔═══╝ ██╔══██║██║╚██╔╝██║██╔══╝  )";
+        ctool::GotoXY(centerX - 18, centerY + 1);
+        std::cout << R"(███████╗██║ ╚████║██████╔╝      ██████  ██║  ██║██║ ╚═╝ ██║███████╗)";
+        ctool::GotoXY(centerX - 18, centerY + 2);
+        std::cout << R"(╚══════╝╚═╝  ╚═══╝╚═════╝       ╚═╝     ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝)";
+
+        ctool::GotoXY(centerX - 10, centerY + 5);
+        std::cout << "Press ESC to Exit or Enter to Restart";
+
+        while (true) {
+            if (_kbhit()) {
+                char key = _getch();
+                if (key == 27) 
+                { 
+                    system("cls");
+                    exit(0);
+                }
+                else if (key == 13) {
+                    _ISEXIT = false; 
+                    break; 
+                }
+            }
         }
-        this_thread::sleep_for(std::chrono::milliseconds(100)); // Use std::this_thread::sleep_for for better cross-platform compatibility
     }
 }
+
+
 
 void cgame::enemyMovement(cenemy& enemy, int mapIndex, int indexEnemy) {
     vector<cmap>& mapList = getMap();
@@ -237,6 +262,10 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int indexEnemy) {
                     if (enemy.getHealth() <= 0)
                     {
                         enemy.setAlive(false);
+                        if (indexEnemy == enemies.size() - 1)
+                        {
+                            setIsExist(true);
+                        }
                         break;
                     }
                 }
@@ -265,7 +294,6 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int indexEnemy) {
 
 void cgame::bulletMovement(cbullet& bullet, vector<cpoint> path, int mapIndex, vector<bool>& bulletThreadStatus, int threadIndex, int enemySpeed)
 {
-    // finished = false;
     vector<cmap> mapList = getMap();
     cmap& map = mapList[mapIndex];
 
