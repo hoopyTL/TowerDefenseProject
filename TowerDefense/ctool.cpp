@@ -2,6 +2,7 @@
 #include "ctool.h"
 #include "cenemy.h"
 #include "ctower.h"
+#include "Sound.h"
 #include "cpoint.h"
 #include "cbullet.h"
 #include "cmap.h"
@@ -31,47 +32,105 @@ void ctool::Draw(string str, int i, const vector<cpoint>& p, cpoint& _p) {
     cout << str << TEXT_BLACK_BG_LIGHT_YELLOW;
 }
 
-void playSound(int audio_pos, int volume = 100)
-{
-    // Thêm đường dẫn đến thư mục sounds
-    const string soundFile[] = {
-        "sounds/background.wav",
-        "sounds/button.wav",
-        "sounds/collision.wav",
-        "sounds/error.wav"
-        "sounds/end.wav",
-        "sounds/exit.wav" };
+void ctool::drawSettingText() {
+    int x, y;
+    x = 35;
+    y = 2;
 
+	ctool tool;
 
-    if (audio_pos < 0 || audio_pos >= sizeof(soundFile) / sizeof(soundFile[0]))
-    {
-        return;
-    }
+    tool.printCharactors(L"░██████╗███████╗████████╗████████╗██╗███╗░░██╗░██████╗░", { short(x),short(y) }, Color::BLACK, Color::YELLOW);
+    tool.printCharactors(L"██╔════╝██╔════╝╚══██╔══╝╚══██╔══╝██║████╗░██║██╔════╝░", { short(x),short(y + 1) }, Color::BLACK, Color::YELLOW);
+    tool.printCharactors(L"╚█████╗░█████╗░░░░░██║░░░░░░██║░░░██║██╔██╗██║██║░░██╗░", { short(x),short(y + 2) }, Color::BLACK, Color::YELLOW);
+    tool.printCharactors(L"░╚═══██╗██╔══╝░░░░░██║░░░░░░██║░░░██║██║╚████║██║░░╚██╗", { short(x),short(y + 3) }, Color::BLACK, Color::YELLOW);
+    tool.printCharactors(L"██████╔╝███████╗░░░██║░░░░░░██║░░░██║██║░╚███║╚██████╔╝", { short(x),short(y + 4) }, Color::BLACK, Color::YELLOW);
+    tool.printCharactors(L"╚═════╝░╚══════╝░░░╚═╝░░░░░░╚═╝░░░╚═╝╚═╝░░╚══╝░╚═════╝░", { short(x),short(y + 5) }, Color::BLACK, Color::YELLOW);
 
-    // Điều chỉnh âm lượng
-    if (volume < 0) volume = 0; // Đảm bảo âm lượng không âm
-    if (volume > 100) volume = 100; // Đảm bảo âm lượng không vượt quá 100
-
-    // Chuyển đổi âm lượng từ 0-100 thành 0-65535
-    DWORD volumeLevel = static_cast<DWORD>(volume * 65535 / 100);
-    waveOutSetVolume(0, volumeLevel | (volumeLevel << 16)); // Thiết lập âm lượng cho cả kênh trái và phải
-
-    // Phát âm thanh
-    PlaySoundA(soundFile[audio_pos].c_str(), NULL, SND_FILENAME | SND_ASYNC);
 }
 
-void stopSound()
-{
-    PlaySoundA(NULL, NULL, 0);
+void ctool::drawGoodByeText(int delayTime) {
+    int x, y;
+    x = 25;
+    y = 2;
+
+    ctool tool;
+    Sleep(delayTime);
+    tool.printCharactors(L"--  _____                                                              _____ ", { short(x),short(y + 0) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"-- ( ___ )                                                            ( ___ )", { short(x),short(y + 1) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"--  |   |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|   | ", { short(x),short(y + 2) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"--  |   |  ▄▄▄▄▄▄▄▄▄▄▄  ▄         ▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄        ▄  ▄    ▄  |   | ", { short(x),short(y + 3) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"--  |   | ▐░░░░░░░░░░░▌▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░░▌      ▐░▌▐░▌  ▐░▌ |   | ", { short(x),short(y + 4) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"--  |   |  ▀▀▀▀█░█▀▀▀▀ ▐░▌       ▐░▌▐░█▀▀▀▀▀▀▀█░▌▐░▌░▌     ▐░▌▐░▌ ▐░▌  |   | ", { short(x),short(y + 5) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"--  |   |      ▐░▌     ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌▐░▌    ▐░▌▐░▌▐░▌   |   | ", { short(x),short(y + 6) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"--  |   |      ▐░▌     ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄█░▌▐░▌ ▐░▌   ▐░▌▐░▌░▌    |   | ", { short(x),short(y + 7) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"--  |   |      ▐░▌     ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌  ▐░▌▐░░▌     |   | ", { short(x),short(y + 8) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"--  |   |      ▐░▌     ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌▐░▌   ▐░▌ ▐░▌▐░▌░▌    |   | ", { short(x),short(y + 9) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"--  |   |      ▐░▌     ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌    ▐░▌▐░▌▐░▌▐░▌   |   | ", { short(x),short(y + 10) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"--  |   |      ▐░▌     ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌     ▐░▐░▌▐░▌ ▐░▌  |   | ", { short(x),short(y + 11) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"--  |   |      ▐░▌     ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌      ▐░░▌▐░▌  ▐░▌ |   | ", { short(x),short(y + 12) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"--  |   |       ▀       ▀         ▀  ▀         ▀  ▀        ▀▀  ▀    ▀  |   | ", { short(x),short(y + 13) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"--  |   |                                                              |   | ", { short(x),short(y + 14) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"--  |   |              ▄         ▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄         ▄           |   | ", { short(x),short(y + 15) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"--  |   |             ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░▌       ▐░▌          |   | ", { short(x),short(y + 16) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"--  |   |             ▐░▌       ▐░▌▐░█▀▀▀▀▀▀▀█░▌▐░▌       ▐░▌          |   | ", { short(x),short(y + 17) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"--  |   |             ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌       ▐░▌          |   | ", { short(x),short(y + 18) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"--  |   |             ▐░█▄▄▄▄▄▄▄█░▌▐░▌       ▐░▌▐░▌       ▐░▌          |   | ", { short(x),short(y + 19) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"--  |   |             ▐░░░░░░░░░░░▌▐░▌       ▐░▌▐░▌       ▐░▌          |   | ", { short(x),short(y + 20) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"--  |   |              ▀▀▀▀█░█▀▀▀▀ ▐░▌       ▐░▌▐░▌       ▐░▌          |   | ", { short(x),short(y + 21) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"--  |   |                  ▐░▌     ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄█░▌          |   | ", { short(x),short(y + 22) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"--  |   |                  ▐░▌     ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄█░▌          |   | ", { short(x),short(y + 23) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"--  |   |                  ▐░▌     ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌          |   | ", { short(x),short(y + 24) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime); 
+    tool.printCharactors(L"--  |   |                   ▀       ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀           |   | ", { short(x),short(y + 25) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"--  |___|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|___| ", { short(x),short(y + 26) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"-- (_____)                                                            (_____)", { short(x),short(y + 27) }, Color::BLACK, Color::YELLOW);
+    Sleep(500);
 }
 
-void adjustVolume()
-{
+void ctool::drawMapLevelText() {
+    int x, y;
+    x = 35;
+    y = 2;
+
+    ctool tool;
+
+    tool.printCharactors(L"██╗     ███████╗██╗   ██╗███████╗██╗     ", { short(x),short(y) }, Color::BLACK, Color::YELLOW);
+    tool.printCharactors(L"██║     ██╔════╝██║   ██║██╔════╝██║     ", { short(x),short(y + 1) }, Color::BLACK, Color::YELLOW);
+    tool.printCharactors(L"██║     █████╗  ██║   ██║█████╗  ██║     ", { short(x),short(y + 2) }, Color::BLACK, Color::YELLOW);
+    tool.printCharactors(L"██║     ██╔══╝  ╚██╗ ██╔╝██╔══╝  ██║     ", { short(x),short(y + 3) }, Color::BLACK, Color::YELLOW);
+    tool.printCharactors(L"███████╗███████╗ ╚████╔╝ ███████╗███████╗", { short(x),short(y + 4) }, Color::BLACK, Color::YELLOW);
+    tool.printCharactors(L"╚══════╝╚══════╝  ╚═══╝  ╚══════╝╚══════╝", { short(x),short(y + 5) }, Color::BLACK, Color::YELLOW);
 
 }
 
 void ctool::Settings() {
-    int option = 0;  // Mặc định chọn mục đầu tiên
+    int option = 0;  
     bool soundStatus = ctool::sound_is_open;  // Lưu trạng thái âm thanh (Bật/Tắt)
     system("color E3");
     while (true) {
@@ -80,27 +139,32 @@ void ctool::Settings() {
 
         // In tiêu đề
         ctool::GotoXY(5, 2);  // Chuyển đến vị trí tiêu đề
-        std::cout << "-----AUDIO SETTINGS-----\n";
+        drawSettingText();  // In nội dung thông tin cài đặt
 
         // Vẽ các ô cho từng mục
-        printRectangle(5, 5, 30, 3);  // Ô cho Sound
-        printRectangle(5, 9, 30, 3);  // Ô cho Back to Main Menu
+        printRectangle(45, 13, 25, 3);  // Ô cho Sound
+        printRectangle(45, 17, 25, 3); // Ô cho Back to Main Menu
 
         // In các lựa chọn trong các ô chữ nhật
         for (int i = 0; i < 2; ++i) {
             // Nếu đang chọn mục này, tô màu xanh
             if (i == option) {
-                setColor(13, 3);  // Highlight in blue
+                setColor(12, 3);  // Highlight in blue
             }
             else {
                 setColor(14, 3);  // Các mục còn lại dùng màu mặc định
             }
-
             // In các mục menu vào giữa các ô chữ nhật
-            ctool::GotoXY(7, 6 + i * 4);  // Vị trí chữ trong ô
+            int x_position = 45 + (30 - (i == 0 ? 15 : 18)) / 2;  // Căn giữa chữ "Sound (ON/OFF)" và "Back to Main Menu"
+            ctool::GotoXY(x_position, 14 + i * 4);  // Vị trí chữ trong ô
+
             switch (i) {
-            case 0: std::cout << "Sound (" << (soundStatus ? "ON" : "OFF") << ")"; break;
-            case 1: std::cout << "Back to Main Menu"; break;
+            case 0:
+                std::cout << "Sound (" << (soundStatus ? "ON) " : "OFF)");
+                break;
+            case 1:
+                std::cout << "Back to Main Menu";
+                break;
             }
         }
 
@@ -115,12 +179,10 @@ void ctool::Settings() {
             option = (option + 1) % 2;  // Nếu ở cuối, quay lại đầu
         }
         else if (ch == KEY_ENTER) {  // Chọn
-            if (option == 0) 
-            {  // Toggle âm thanh
+            if (option == 0) {  // Toggle âm thanh
                 soundStatus = !soundStatus;  // Thay đổi trạng thái âm thanh
-                sound_is_open = soundStatus;  // Cập nhật trạng thái âm thanh
-                if (sound_is_open) 
-                {
+                ctool::sound_is_open = soundStatus;  // Cập nhật trạng thái âm thanh
+                if (ctool::sound_is_open) {
                     playSound(BACKGROUND_SOUND);  // Phát nhạc nền nếu bật âm thanh
                 }
                 else 
@@ -128,56 +190,106 @@ void ctool::Settings() {
                     stopSound();  // Dừng nhạc nền nếu tắt âm thanh
                 }
             }
-            else if (option == 1) 
-            {  // Quay lại Menu chính
+            else if (option == 1) {  // Quay lại Menu chính
+                setColor(14, 3);
+                system("cls");
+                drawTowerDefenseText();
                 break;
             }
         }
         else if (ch == 27) {  // Phím ESC để quay lại
+            setColor(14, 3);
             system("cls");
-            std::cout << "-----TOWER DEFENSE-----\n";
+            drawTowerDefenseText();
             break;
         }
     }
 }
 
 
+void ctool::printCharactors(
+    std::wstring content,
+    COORD spot,
+    Color text_color,
+    Color background_color,
+    short maxLength
+) {
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    DWORD Written;
+
+    // convert text color and background color to WORD that in range of 0-265 in color code table
+    int color = (int)text_color + (int)background_color * 16;
+
+    // if the content is too long
+    if (maxLength != -1) {
+        content = content.substr(0, maxLength) + L"...";
+    }
+
+    for (int i = 0; i < content.length(); i++) {
+        // set text background color
+        FillConsoleOutputAttribute(hOut, color, 1, spot, &Written);
+
+        // print 1 character 
+        FillConsoleOutputCharacterW(hOut, content[i], 1, spot, &Written);
+        spot.X++;
+    }
+}
+
+
+
+void ctool::drawAboutText() {
+    int x, y;
+    x = 40;
+    y = 2;
+
+    ctool tool;
+    tool.printCharactors(L"░█████╗░██████╗░░█████╗░██╗░░░██╗████████╗", { short(x),short(y + 0) }, Color::BLACK, Color::YELLOW);
+    tool.printCharactors(L"██╔══██╗██╔══██╗██╔══██╗██║░░░██║╚══██╔══╝", { short(x),short(y + 1) }, Color::BLACK, Color::YELLOW);
+    tool.printCharactors(L"███████║██████╦╝██║░░██║██║░░░██║░░░██║░░░", { short(x),short(y + 2) }, Color::BLACK, Color::YELLOW);
+    tool.printCharactors(L"██╔══██║██╔══██╗██║░░██║██║░░░██║░░░██║░░░", { short(x),short(y + 3) }, Color::BLACK, Color::YELLOW);
+    tool.printCharactors(L"██║░░██║██████╦╝╚█████╔╝╚██████╔╝░░░██║░░░", { short(x),short(y + 4) }, Color::BLACK, Color::YELLOW);
+    tool.printCharactors(L"╚═╝░░╚═╝╚═════╝░░╚════╝░░╚═════╝░░░░╚═╝░░░", { short(x),short(y + 5) }, Color::BLACK, Color::YELLOW);
+}
+
 void ctool::printAbout() {
     system("cls");
     system("color E3");
-    std::cout << "----- ABOUT THE GAME -----\n";
-    setColor(BG_LIGHT_YELLOW, BG_LIGHT_PURPLE);
+	ctool::drawAboutText();
+    GotoXY(20, 10);
 
     // Hiển thị thông tin về game
-    std::cout << "\nTower Defense, also known as Tower Defense Game, is a subgenre of real-time strategy games.\n";
-    std::cout << "In this game, players must defend a structure or area from waves of enemies\n";
-    std::cout << "by placing defensive towers along their path. Each tower has different abilities\n";
-    std::cout << "and can be upgraded to increase its effectiveness.\n";
-    std::cout << "\nThe goal is to prevent the enemies from reaching your base while managing\n";
-    std::cout << "resources to build stronger defenses.\n\n\n";
-    std::cout << "\nPress ESC to go back to the main menu.\n\n\n";
+    setColor(14, 12);
+    std::cout << "\n\t\t\t----- TOWER DEFENSE -----\n";
+    setColor(14, 0);
+    std::cout << "\n\t\t\tTower Defense, also known as Tower Defense Game, is a subgenre of real-time strategy games.\n";
+    std::cout << "\t\t\tIn this game, players must defend a structure or area from waves of enemies.\n";
+    std::cout << "\t\t\tThe goal is to prevent the enemies from reaching your base.\n";
+    std::cout << "\t\t\tIf the enemies reach your base, the game will be end and you LOST. Whearas, you WON the game\n";
+    std::cout << "\n\t\t\tPress ESC to go back to the main menu.\n";
 
-    setColor(14, 3);
-
-    // Thêm thông tin về người viết code
-    std::cout << "\n----- GROUP 4 -----\n";
-    std::cout << "1. Dinh Ngoc Anh Duong \n";
-    std::cout << "2. Nguyen Van Hop\n";
-    std::cout << "3. Tran So Vinh\n";
-    std::cout << "4. Nguyen Nhat Hoang\n";
+    setColor(14, 12);
+    std::cout << "\n\t\t\t----- GROUP 4 -----\n";
+    setColor(14, 0);
+    std::cout << "\n\t\t\t1. Dinh Anh Duong \n";
+    std::cout << "\t\t\t2. Nguyen Van Hop\n";
+    std::cout << "\t\t\t3. Tran So Vinh\n";
+    std::cout << "\t\t\t4. Nguyen Nhat Hoang\n";
 
     // Thêm thông tin người hướng dẫn
-    std::cout << "\n----- INSTRUCTOR -----\n";
-    std::cout << "MR Truong Toan Thinh\n";
+    setColor(14, 12);
+    std::cout << "\n\t\t\t----- INSTRUCTOR -----\n";
+    setColor(14, 0);
+    std::cout << "\n\t\t\tMR Truong Toan Thinh\n";
 
     setDefaultColor();
 
     // Chờ người dùng nhấn phím ESC để quay lại
     while (true) {
+		setColor(14, 3);
         char ch = _getch();
         if (ch == 27) {  // Phím ESC để quay lại
             system("cls");
-            std::cout << "-----TOWER DEFENSE-----\n";
+            drawTowerDefenseText();
             break;
         }
     }
@@ -211,48 +323,10 @@ void ctool::printRectangle(int left, int top, int width, int height)
     setColor(14, 3);  // Khôi phục lại màu sắc mặc định
 }
 
-
-void ctool::printLogo() {
-    system("cls");
-
-    std::ifstream logo_file("./images/logo.txt");
-    if (!logo_file) {
-        std::cout << "Cannot open file!\n";
-        return;
-    }
-
-
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
-    GetConsoleScreenBufferInfo(consoleOutput, &csbi);
-
-    int consoleWidth = csbi.srWindow.Right - csbi.srWindow.Left + 1;
-    int consoleHeight = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
-
-
-    setColor(BG_WHITE, BG_RED);
-
-
-    int yPosStart = (consoleHeight / 2) - 5;
-
-    std::string line;
-    int lineIndex = 0;
-    while (getline(logo_file, line)) {
-        int xPos = (consoleWidth - line.length()) / 2;
-        int yPos = yPosStart + lineIndex;
-        GotoXY(xPos, yPos);
-        std::cout << line;
-        lineIndex++;
-        Sleep(100);
-    }
-
-    setDefaultColor();
-    logo_file.close();
-}
-
 bool ctool::printExit()
 {
-    system("cls");
-    std::cout << "Do you wish to exit?: [0 == yes / 1 == no]\n";
+	system("cls");
+    std::cout << "Do you want to exit ? [0 == yes / 1 == no]\n";
     int option = _getch();
 
     while (option != '0' && option != '1')
@@ -264,40 +338,250 @@ bool ctool::printExit()
     if (option == '0')
     {
         system("cls");
-        std::cout << "Thank you for playing this game.\n";
+        std::cout << "Thank you for playing this game !\n";
+        drawGoodByeText(100);
         exit(0);
     }
-
-    system("cls");
     std::cout << "Returning...\n";
+    Sleep(500);
+    system("cls");
+    drawTowerDefenseText();
 
     return false;
 }
+
+
+
+void ctool::drawSplash(int delayTime) {
+    int x, y;
+    x = 25;
+    y = 2;
+
+	ctool tool;
+    Sleep(delayTime);
+    tool.printCharactors(L"████████╗ ██████╗ ██╗    ██╗███████╗██████╗               ", { short(x),short(y + 0) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"╚══██╔══╝██╔═══██╗██║    ██║██╔════╝██╔══██╗              ", { short(x),short(y + 1) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"   ██║   ██║   ██║██║ █╗ ██║█████╗  ██████╔╝              ", { short(x),short(y + 2) }, Color::BLACK, Color::YELLOW);
+	Sleep(delayTime);
+    tool.printCharactors(L"   ██║   ██║   ██║██║███╗██║██╔══╝  ██╔══██╗              ", { short(x),short(y + 3) }, Color::BLACK, Color::YELLOW);
+	Sleep(delayTime);
+    tool.printCharactors(L"   ██║   ╚██████╔╝╚███╔███╔╝███████╗██║  ██║              ", { short(x),short(y + 4) }, Color::BLACK, Color::YELLOW);
+	Sleep(delayTime);
+    tool.printCharactors(L"   ╚═╝    ╚═════╝  ╚══╝╚══╝ ╚══════╝╚═╝  ╚═╝              ", { short(x),short(y + 5) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+	y += 7;
+    tool.printCharactors(L"                 ██████╗ ███████╗███████╗███████╗███╗   ██╗███████╗███████╗", { short(x),short(y + 0) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"                 ██╔══██╗██╔════╝██╔════╝██╔════╝████╗  ██║██╔════╝██╔════╝", { short(x),short(y + 1) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);   
+    tool.printCharactors(L"                 ██║  ██║█████╗  █████╗  █████╗  ██╔██╗ ██║███████╗█████╗  ", { short(x),short(y + 2) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"                 ██║  ██║██╔══╝  ██╔══╝  ██╔══╝  ██║╚██╗██║╚════██║██╔══╝  ", { short(x),short(y + 3) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"                 ██████╔╝███████╗██║     ███████╗██║ ╚████║███████║███████╗", { short(x),short(y + 4) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"                 ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚═╝  ╚═══╝╚══════╝╚══════╝", { short(x),short(y + 5) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+
+	y -= 9;
+
+    tool.printCharactors(L"▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░░░░░            ▓▒▒░ ░░░░░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒                 ", { short(x),short(y + 0) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░░░    █▒▒ ░░▓   ▓░   ░█░ ░░░░░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒                 ", { short(x),short(y + 1) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░░   ▒▓▓▒█░░▓▒▒▒░░░▒░░░▒▒▓▓▓█░░░░░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒                 ", { short(x),short(y + 2) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░░    ▓   ▒▓▒▒▒▒░▒░▒▒░░░█░░▒▓▓   ░░░░░░▒▒▒▒▒▒▒▒▒▒▒▒                 ", { short(x),short(y + 3) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░      ▒░▒░▒▓▓▓▓▒▒▒▒▓▓▒▓▒ ▒▒▒▒▓    ░░░░░░▒▒▒▒▒▒▒▒▒▒▒                 ", { short(x),short(y + 4) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+
+    tool.printCharactors(L"▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░       ▓▒▒▒▒▒▒▒▓▓▓▒░░▓▓▒▒▓▒▒▒▒▓▒    ░░░░░▒▒▒▒▒▒▒▒▒▒▒                 ", { short(x),short(y + 5) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒▒▒▒▒▒░░░░░░       █▓▓▒▒▒▒▒▒▒▒▒░▓░░░░░▒▒▒▒▒▓▒▒    ░░░░░▒▒▒▒▒▒▒▒▒▒                ", { short(x),short(y + 6) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒▒▒▒▒▒░░░░░▒       █▒▓▒▒▒▒▒▒▒▒█░░░░░▒▒▒▒▒▓▓▓▓▒     ░░░░░▒▒▒▒▒▒▒▒▒                 ", { short(x),short(y + 7) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒▒▒▒▒░░░░░▓▒▓     ▒▓▓▓▒▒▒▒▒▒▓▒▓░░░▒▒▒▒▒▓ ░▒▓▒█    ░▒▒▒░░░▒▒▒▒▒▒▒▒                 ", { short(x),short(y + 8) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒▒▒▒░░░░░▒░▒▒▓░   ▒▒▒▒▒▒▒▒▒▒▓▒▓░▓░   ▓▓▓ ▒▒▒▒▓   ░▒▒▒▓░░░░▒▒▒▒▒▒▒                 ", { short(x),short(y + 9) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒▒▒░░░░░░▓▒▓▓▓▒   ░▓▒▒▓▒▒▒▒▒▓▒▓░░█░▒▒▓▒░░▒▒▒▒█   ▒░▒▒▓▒░░░░▒▒▒▒▒▒                 ", { short(x),short(y + 10) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒▒░░░░░░▓░▒▒▒▒▒▓▓ ░▓ ░▒▓▒▒█▒▓▒░░░▓░░▒▒▓▒▒▒▒▒▒█  ▓▒▒▒▒▒▓░░░░▒▒▒▒▒▒                 ", { short(x),short(y + 11) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒░░░░░░▒▒░░▒▒▒▓ ░░▓▓░ ░▒▒▓▓▒░░▒▒▒░░░░░░▒▒▒▒▒▓▓▒░▒▓▒▒▒▓▓ ░░░▒▒▒▒▒▒                 ", { short(x),short(y + 12) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒░░░░░░▒░▒▒▒▓▒  ░▓▓▓ ░▓▒░░░░░░░░░░░░░▒▒▒▒▓▓▒▒▓▒  ▒▓▒▒▒▒▓ ░░▒▒▒▒▒▒                 ", { short(x),short(y + 13) }, Color::BLACK, Color::YELLOW);
+	Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒░░░░▒▒░▒░░▓░ ░▒▒█▒▓  ▒░░░░░░░░░░░░▒▒▒▒▒▒▒▒▒▒▓▓  ░▒▓▒░▓   ░▒▒▒▒▒▒                 ", { short(x),short(y + 14) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒░░    ░  ▒▒▒▒░░▓█▒▓░ ░░░░░░░░░░░░░▒▒▒▒▒▒▒▓▓▒▒▓░  ░░▓ ░▓   ▒▒▒▒▒▒                    ", { short(x),short(y + 15) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒░    ▒▓▓▓░░░▓▒▒▓░░░░▓░░░░▒▒░░░░░░▒▒▒▒▒▓▒▓░░▓▒▒▓▓▒▒░░░   ░▒▒▒▒▒▒▒                   ", { short(x),short(y + 16) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒   ░▒░░░▓▒▒▓░░░▓░ ░▓▓▒▒█▒░░ ░▒▒░▒▓░  ░▒▓▓ ░▒▒▒▓░░▒▓▓▒░░░  ▒▒▒▒▒▒             ", { short(x),short(y + 17) }, Color::BLACK, Color::YELLOW);
+	Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒ ▓▒░▒▓▒▓░░░▒▓▒░▓   ▒▒░▒▓░░░░▓▓▓▒▒▓ ▓░░░▓▒▓▓▒▒▒▓▒▓▓░▒▒▓▓▓▒ ▒▒▒▒▒▒                 ", { short(x),short(y + 18) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒▓░░▒▒░░░▓░▒▒▒▒░▓     ░░░░░░░▓▒░░░░▓▒░░░░░█▒▒▒▒▒░▒▒░░▒▒▒░▒▓▒▒▒▒▒▒                 ", { short(x),short(y + 19) }, Color::BLACK, Color::YELLOW);
+	Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒░▓▒░▒▓░▒▒░░░▒▓░▓   ░░░░░░░░░░░░░░░░▒▒░░░░▒▒▒▒▒▓▒▒▓▒▒▒░▒▒▓▒▒▒▒▒▒▒                 ", { short(x),short(y + 20) }, Color::BLACK, Color::YELLOW);
+	Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒▓░░░▒░░░▒▒░░▒▒▒▓ ░▓░ ░░░░▓▓░░░░░░░░░░░░░▒▒▒▒▒▒▓░▒▒▓▒▒▒▓▒▒░▒▒▒▒▒▒                 ", { short(x),short(y + 21) }, Color::BLACK, Color::YELLOW);
+	Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒▓░░▓░░░░▒▒▒▒▒▓▒▓ ▒░▓▒▒░▒▓ ░▒▒░░░░░░░▒▒▒▒▒▒▒▒▒▒▓▒▒▓▒▒▒▒▒▓▓ ▒▒▒▒▒▒                 ", { short(x),short(y + 22) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒ ▒▓▓▒░░▒▒▓▓▓▓▒░▓ ░▓░░▒░░░░▒▒▒▒░░░░░░░▒▓▒▒▒▒▒▒▒▓▓▓▓▒▒▒▒▒▒  ▒▒▒▒▒▒                  ", { short(x),short(y + 23) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒  ▓▓▓▓▓▒▒░▒▒▒░░▓░░▓░░▒░░░░▒ ▒▒░░░░░░░▒▒▒▒▒▒▒▒▒▓▒▒▒▒▓▓▓▓   ▒▒▒▒▒▒                ", { short(x),short(y + 24) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒ ▒▓▓▓▒▒▒░░░░░░░▓▒▒▓▒▒▒▒▒▒▒▒▒▒▓░░░░▒▒▒▒▒▒▒▒▒▒▒▒▓░░░░▒▒▒▒▒█░▒▒▒▒▒▒                ", { short(x),short(y + 25) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒ ▒▓▒▒▒▓▒░░░░░░░░▓▓▓▒▓▒▒░▒▒▒ ░▓░░░░▒▒▒▒▒▒▒▒▒▓▓▓▒░░░░░▒▓▒▒▓░▒▒▒▒▒▒                 ", { short(x),short(y + 26) }, Color::BLACK, Color::YELLOW);
+	Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒░░▒▓▒▒▒▒▒▒▓▓░░░░░░▒▓█▓▒░░▒▒░▒▓░░░░▒▒▒▒▒▓▓█▓▒░░░░░▒▓▒▒▒▓▓▓░▒▒▒▒▒▒                 ", { short(x),short(y + 27) }, Color::BLACK, Color::YELLOW);
+	Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒░░░  ▒█▓▒▒▒▒▒▒▓▒░░░░░░▒▓▓██▓▓▓▓▓▓▓██▓▓▓░░░░░░▓▓▒▒▒▓▓█▓  ░░▒▒▒▒▒▒                 ", { short(x),short(y + 28) }, Color::BLACK, Color::YELLOW);
+	Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒░░░░░    ▒█▓▒▒▒▒▒▒▓░░░░░░░░░░░░░░░░░░░░░░▓▓▒▒▒▒▓▓▓    ░░░░▒▒▒▒▒▒                ", { short(x),short(y + 29) }, Color::BLACK, Color::YELLOW);
+    Sleep(delayTime);
+    tool.printCharactors(L"▒▒▒▒▒▒░░░░░░░░     █▓▒▒▒▒▒▒▒▓░░░░░░░░░░░░░░▓▒▒▒▒▒▒▓█▒     ░░░░░░▒▒▒▒▒▒             ", { short(x),short(y + 30) }, Color::BLACK, Color::YELLOW);
+    
+}
+
+void ctool::drawTowerDefenseText() {
+    int x, y;
+    x = 35;
+    y = 8;
+
+    ctool tool;
+    Sleep(300);
+    tool.printCharactors(L"████████╗ ██████╗ ██╗    ██╗███████╗██████╗               ", { short(x),short(y + 0) }, Color::BLACK, Color::YELLOW);
+    Sleep(100);
+    tool.printCharactors(L"╚══██╔══╝██╔═══██╗██║    ██║██╔════╝██╔══██╗              ", { short(x),short(y + 1) }, Color::BLACK, Color::YELLOW);
+    Sleep(100);
+    tool.printCharactors(L"   ██║   ██║   ██║██║ █╗ ██║█████╗  ██████╔╝              ", { short(x),short(y + 2) }, Color::BLACK, Color::YELLOW);
+    Sleep(100);
+    tool.printCharactors(L"   ██║   ██║   ██║██║███╗██║██╔══╝  ██╔══██╗              ", { short(x),short(y + 3) }, Color::BLACK, Color::YELLOW);
+    Sleep(100);
+    tool.printCharactors(L"   ██║   ╚██████╔╝╚███╔███╔╝███████╗██║  ██║              ", { short(x),short(y + 4) }, Color::BLACK, Color::YELLOW);
+    Sleep(100);
+    tool.printCharactors(L"   ╚═╝    ╚═════╝  ╚══╝╚══╝ ╚══════╝╚═╝  ╚═╝              ", { short(x),short(y + 5) }, Color::BLACK, Color::YELLOW);
+    Sleep(100);
+    y += 7;
+    tool.printCharactors(L"                 ██████╗ ███████╗███████╗███████╗███╗   ██╗███████╗███████╗", { short(x),short(y + 0) }, Color::BLACK, Color::YELLOW);
+    Sleep(100);
+    tool.printCharactors(L"                 ██╔══██╗██╔════╝██╔════╝██╔════╝████╗  ██║██╔════╝██╔════╝", { short(x),short(y + 1) }, Color::BLACK, Color::YELLOW);
+    Sleep(100);
+    tool.printCharactors(L"                 ██║  ██║█████╗  █████╗  █████╗  ██╔██╗ ██║███████╗█████╗  ", { short(x),short(y + 2) }, Color::BLACK, Color::YELLOW);
+    Sleep(100);
+    tool.printCharactors(L"                 ██║  ██║██╔══╝  ██╔══╝  ██╔══╝  ██║╚██╗██║╚════██║██╔══╝  ", { short(x),short(y + 3) }, Color::BLACK, Color::YELLOW);
+    Sleep(100);
+    tool.printCharactors(L"                 ██████╔╝███████╗██║     ███████╗██║ ╚████║███████║███████╗", { short(x),short(y + 4) }, Color::BLACK, Color::YELLOW);
+    Sleep(100);
+    tool.printCharactors(L"                 ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚═╝  ╚═══╝╚══════╝╚══════╝", { short(x),short(y + 5) }, Color::BLACK, Color::YELLOW);
+}
+
+void playSound(int audio_pos)
+{
+    // Thêm đường dẫn đến thư mục sounds
+    const string soundFile[] = {
+        "sounds/background.wav",
+        "sounds/button.wav",
+        "sounds/collision.wav",
+        "sounds/error.wav"
+        "sounds/end.wav",
+        "sounds/exit.wav" };
+
+
+    if (audio_pos < 0 || audio_pos >= sizeof(soundFile) / sizeof(soundFile[0]))
+    {
+        return;
+    }
+
+    int volume = 100;
+
+    // Điều chỉnh âm lượng
+    if (volume < 0) volume = 0; // Đảm bảo âm lượng không âm
+    if (volume > 100) volume = 100; // Đảm bảo âm lượng không vượt quá 100
+
+    // Chuyển đổi âm lượng từ 0-100 thành 0-65535
+    DWORD volumeLevel = static_cast<DWORD>(volume * 65535 / 100);
+    waveOutSetVolume(0, volumeLevel | (volumeLevel << 16)); // Thiết lập âm lượng cho cả kênh trái và phải
+
+    // Phát âm thanh
+    PlaySoundA(soundFile[audio_pos].c_str(), NULL, SND_FILENAME | SND_ASYNC);
+}
+
+void stopSound()
+{
+    PlaySoundA(NULL, NULL, 0);
+}
+
+void adjustSound(int& volume) {
+    cout << "Use 'd' or '->' to increase volume, 'a' or '<-' to decrease volume, 'q' to quit.\n";
+
+    while (true) {
+        if (_kbhit()) { // Kiểm tra nếu có phím nhấn
+            char ch = _getch(); // Lấy phím nhấn
+
+            if (ch == 'q' || ch == 'Q') { // Thoát khi nhấn 'q'
+                cout << "Exiting volume adjustment...\n";
+                break;
+            }
+            else if (ch == 'd' || ch == 77) { // Phím 'd' hoặc '->'
+                volume += 10;
+            }
+            else if (ch == 'a' || ch == 75) { // Phím 'a' hoặc '<-'
+                volume -= 10;
+            }
+            else {
+                continue; // Bỏ qua các phím không liên quan
+            }
+
+            // Đảm bảo âm lượng nằm trong khoảng 0-100
+            if (volume < 0) volume = 0;
+            if (volume > 100) volume = 100;
+
+            // Chuyển đổi âm lượng từ 0-100 thành 0-65535
+            DWORD volumeLevel = static_cast<DWORD>(volume * 65535 / 100);
+            waveOutSetVolume(0, volumeLevel | (volumeLevel << 16)); // Cập nhật âm lượng
+
+            cout << "Current Volume: " << volume << "%\n";
+        }
+    }
+}
+
+
 void ctool::printMenu()
 {
+    playSound(BACKGROUND_SOUND);
+    
     SetConsoleTextAttribute(consoleOutput, BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED);
 
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     GetConsoleScreenBufferInfo(consoleOutput, &csbi);
     DWORD consoleSize = csbi.dwSize.X * csbi.dwSize.Y;
-
     DWORD written;
     FillConsoleOutputAttribute(consoleOutput, BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED, consoleSize, { 0, 0 }, &written);
-    printLogo();
-    Sleep(500);
-
+    system("color E0");
+    drawSplash(100);
+    Sleep(100);
     system("cls");
-    system("color E3");
+	system("color E3");
     std::cout << "Loading menu...\n";
     Sleep(200);
 
-    system("cls");
+	system("cls");
     int menu_option = 0; // Mặc định chọn mục đầu tiên
 
-    std::cout << "-----TOWER DEFENSE-----\n";
+	drawTowerDefenseText();
     while (true)
     {
-        system("color E3");
+		system("color E3");
 
         // Vẽ các ô cho từng mục
         printRectangle(5, 5, 20, 3); // Cho mục 1: "PLAY"
@@ -310,7 +594,7 @@ void ctool::printMenu()
         for (int i = 0; i < 5; ++i) {
             // Nếu đang chọn mục này, tô màu xanh
             if (i == menu_option) {
-                setColor(11, 0);  // Highlight in blue
+                setColor(12, 0);  // Highlight in blue
             }
             else {
                 setColor(14, 3);  // Các mục còn lại dùng màu mặc định
@@ -354,12 +638,13 @@ void ctool::printMenu()
             case 1:
                 system("cls");
                 std::cout << "Loading save...\n";
-                // Logic cho mục SAVE
+                Sleep(1000);
+                system("cls");
+                drawTowerDefenseText();
                 break;
             case 2:
                 system("cls");
                 ctool::Settings(); // Mở menu SETTINGS
-                playSound(0);
                 break;
             case 3:
                 system("cls");
@@ -427,8 +712,6 @@ void setTitle()
 {
     SetConsoleTitleA("TOEWER-DEFENSE");
 }
-
-
 
 
 

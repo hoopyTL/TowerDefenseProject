@@ -2,8 +2,9 @@
 #include "ctool.h"
 
 mutex printMtx;
-// mutex gameMtx; // Mutex for game state updates
+mutex gameMtx; // Mutex for game state updates
 mutex enemyMtx; // Mutex for enemies list access
+mutex bulletMtx; // Mutex for enemies list access
 
 void cgame::addMap(const cmap& map)
 {
@@ -35,30 +36,30 @@ void cgame::processGame() {
 
     int option = 0;  // Mặc định chọn bản đồ đầu tiên
     int choice = 0;  // Lựa chọn bản đồ cuối cùng (để sử dụng sau)
-    std::cout << "-----CHOOSE MAP-----\n";
+    ctool::drawMapLevelText();
     while (true) {
         //system("cls");  // Xóa màn hình
         system("color E3");  // Đặt màu nền và màu chữ
 
 
         // Vẽ các ô cho từng bản đồ (1-4)
-        ctool::printRectangle(5, 5, 30, 3);  // Ô cho Map 1
-        ctool::printRectangle(5, 9, 30, 3);  // Ô cho Map 2
-        ctool::printRectangle(5, 13, 30, 3); // Ô cho Map 3
-        ctool::printRectangle(5, 17, 30, 3); // Ô cho Map 4
+        ctool::printRectangle(40, 10, 20, 3);  // Ô cho Map 1
+        ctool::printRectangle(40, 14, 20, 3);  // Ô cho Map 2
+        ctool::printRectangle(40, 18, 20, 3); // Ô cho Map 3
+        ctool::printRectangle(40, 22, 20, 3); // Ô cho Map 4
 
         // In các lựa chọn vào các ô chữ nhật
         for (int i = 0; i < 4; ++i) {
             // Nếu đang chọn mục này, tô màu xanh
             if (i == option) {
-                setColor(13, 3);  // Highlight in blue
+                setColor(12, 3);  // Highlight in blue
             }
             else {
                 setColor(14, 3);  // Các mục còn lại dùng màu mặc định
             }
 
             // In các lựa chọn bản đồ vào giữa các ô chữ nhật
-            ctool::GotoXY(7, 6 + i * 4);  // Vị trí chữ trong ô
+            ctool::GotoXY(47, 11 + i * 4);  // Vị trí chữ trong ô
             std::cout << "Map " << (i + 1);  // In "Map 1", "Map 2", ...
         }
 
@@ -104,19 +105,34 @@ void cgame::processGame() {
         indexEnemy++;
     }
 
-    for (auto& t : enemyThreads) 
-    {
+    // Thread để cập nhật trạng thái game
+    std::thread gameStateThread(&cgame::endGame, this);
+
+    // Đợi tất cả các thread di chuyển kẻ địch kết thúc
+    for (auto& t : enemyThreads) {
         if (t.joinable()) {
             t.join();
         }
     }
 
-    gameStateUpdate();
+    // Đợi thread cập nhật trạng thái game kết thúc
+    if (gameStateThread.joinable()) {
+        gameStateThread.join();
+    }
 }
 
-void cgame::gameStateUpdate() {
+void cgame::endGame()
+{
+    lock_guard<mutex> lock(gameMtx);
     if (_ISEXIT)
     {
+        /*for (auto& t : enemyThreads)
+        {
+            if (t.joinable()) {
+                t.join();
+            }
+        }*/
+
         system("cls");
         system("color 4F"); // Màu nền đỏ, chữ trắng
 
@@ -139,9 +155,10 @@ void cgame::gameStateUpdate() {
         std::cout << R"(╚══════╝╚═╝  ╚═══╝╚═════╝       ╚═╝     ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝)";
 
         ctool::GotoXY(centerX - 10, centerY + 5);
-        std::cout << "Press ESC to Exit or Enter to Restart";
+        std::cout << "Press ESC to Restart";
 
-        while (true) {
+        while (true) 
+        {
             if (_kbhit()) {
                 char key = _getch();
                 if (key == 27) 
@@ -166,6 +183,7 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int indexEnemy) {
 
     auto& enemies = map.getEnemies();
     auto copyEnemies = enemies;
+    int numberEnemies = enemies.size();
 
     auto& towers = map.getTowers();
 
@@ -202,7 +220,7 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int indexEnemy) {
                 else if (enemy.getCntHit() == 2)
                     cout << TEXT_RED_BG_LIGHT_YELLOW;
                 else
-                    cout << TEXT_PURPLE_BG_LIGHT_YELLOW;
+                    cout << TEXT_BLACK_BG_LIGHT_YELLOW;
 
                 string tmp = "E";
                 ctool::Draw(tmp, enemyIndex, path, ENEMY);
@@ -262,9 +280,30 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int indexEnemy) {
                     if (enemy.getHealth() <= 0)
                     {
                         enemy.setAlive(false);
-                        if (indexEnemy == enemies.size() - 1)
                         {
-                            setIsExist(true);
+                            lock_guard<mutex> lock(printMtx);
+                            cout << TEXT_CYAN_BG_LIGHT_YELLOW;
+                            tmp = "x";
+                            ctool::Draw(tmp, enemyIndex, path, ENEMY);
+                            Sleep(600);
+                            ctool::Draw(" ", enemyIndex, path, ENEMY);
+                        }
+                        if (indexEnemy == numberEnemies - 1)
+                        {
+                            {
+                                lock_guard<mutex> lock(gameMtx);
+                                setIsExist(true);
+                            }
+
+                            for (auto& t : bullet_threads)
+                            {
+                                if (t.joinable())
+                                {
+                                    t.join();
+                                }
+                            }
+
+                            return;
                         }
                         break;
                     }
@@ -280,16 +319,24 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int indexEnemy) {
 
     {
         lock_guard<mutex> lock(printMtx);
+        cout << TEXT_CYAN_BG_LIGHT_YELLOW;
         tmp = " ";
         ctool::Draw(tmp, enemyIndex, path, ENEMY);
     }
 
     for (auto& t : bullet_threads)
     {
-        if (t.joinable()) {
+        if (t.joinable())
+        {
             t.join();
         }
     }
+
+    {
+        lock_guard<mutex> lock(gameMtx);
+        setIsExist(true);
+    }
+    
 }
 
 void cgame::bulletMovement(cbullet& bullet, vector<cpoint> path, int mapIndex, vector<bool>& bulletThreadStatus, int threadIndex, int enemySpeed)

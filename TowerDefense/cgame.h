@@ -24,7 +24,8 @@ public:
     void startGame();
     void processGame();
 
-    void gameStateUpdate();
+    void endGame();
+
     void enemyMovement(cenemy& enemy, int mapIndex, int count);
     void bulletMovement(cbullet& bullet, vector<cpoint> path, int mapIndex, vector<bool>& bulletThreadStatus, int threadIndex, int enemySpeed);
 };
