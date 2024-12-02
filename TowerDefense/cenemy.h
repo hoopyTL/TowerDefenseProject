@@ -8,12 +8,12 @@ using namespace std;
 class cenemy 
 {
 private:
-    int _speed;                   
-    double _health;                  
-    cpoint _epos;                 
-    vector<cpoint> _epath;        
-    int _index;                   
-    bool _isAlive;                
+    int _speed;                   // Tốc độ của kẻ thù
+    double _health;               // Máu
+    cpoint _epos;                 // Tọa độ
+    vector<cpoint> _epath;        // Đường đi
+    int _index;                   // Thứ tự trên đường đi
+    bool _isAlive;        // Trạng thái sống/chết của kẻ thù     
 
 public:
     // Constructors
@@ -34,5 +34,5 @@ public:
     void setIndex(int index);
     void setAlive(bool alive);
 
-    void decreaseHealth(int damage);
+    void decreaseHealth(double damage); // Trừ máu kẻ thù với damage của đạn
 };

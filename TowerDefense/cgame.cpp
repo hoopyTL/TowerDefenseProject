@@ -182,31 +182,32 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int indexEnemy) {
 
     auto& towers = map.getTowers();
 
-    int step = 5;
-    int timeDelay = indexEnemy * step * 500;
+    int step = 5;   // Khoảng cách giữa các enemy
+    int timeDelay = indexEnemy * step * 500;    // Thời gian delay
 
-    this_thread::sleep_for(chrono::milliseconds(timeDelay));
+    this_thread::sleep_for(chrono::milliseconds(timeDelay));    // Cho delay
 
     vector<thread> bullet_threads;  // Danh sách các luồng đạn
-    vector<bool> bulletThreadStatus;    // Danh sách trạng thái của các luồng (đã kết thúc chưa, chưa thì là False)
+    vector<bool> bulletThreadStatus;    // Danh sách trạng thái của các luồng tương ứng (đã kết thúc chưa, chưa thì là False)
 
     int damage = 30;
-    int threadIndex = 0;
+    int threadIndex = 0; // Chỉ số để biểu thị thứ tự của luồng đạn
 
     string tmp;
 
     while (enemyIndex < path.size() && !gameOver.load() && enemy.isAlive())
     {  
         {
-            lock_guard<mutex> lock(printMtx);
-            if (enemy.getHealth() > 0.75 * enemyHealth)
-                cout << TEXT_GREEN_BG_LIGHT_YELLOW;
+            lock_guard<mutex> lock(printMtx);   
+
+            if (enemy.getHealth() > 0.7 * enemyHealth)
+                cout << TEXT_GREEN_BG_LIGHT_YELLOW;     // Enemy còn nhiều máu thì vẽ màu xanh
             else if (enemy.getHealth() >= 0.5 * enemyHealth)
-                cout << TEXT_YELLOW_BG_LIGHT_YELLOW;
+                cout << TEXT_YELLOW_BG_LIGHT_YELLOW;    // Enemy còn nửa máu thì vẽ màu vàng
             else if (enemy.getHealth() >= 0.2 * enemyHealth)
-                cout << TEXT_RED_BG_LIGHT_YELLOW;
+                cout << TEXT_RED_BG_LIGHT_YELLOW;       // Enemy thấp máu thì vẽ màu đỏ
             else
-                cout << TEXT_BLACK_BG_LIGHT_YELLOW;
+                cout << TEXT_BLACK_BG_LIGHT_YELLOW;     // Enemy gần cạn máu thì vẽ màu đen
 
             string tmp = "E";
             ctool::Draw(tmp, enemyIndex, path, ENEMY);
@@ -223,23 +224,26 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int indexEnemy) {
 
             for (auto& tower : towers)
             {
-                auto path = map.createBulletPath(tower, copyEnemies);
+                auto path = map.createBulletPath(tower, copyEnemies);   // Tạo đường đi cho đạn
 
                 if (path.empty())
                 {
                     continue;
                 }
 
+                // Nếu đường đi tồn tại thì tạo đạn và nhét vào danh sách đạn trong map
                 cbullet newBullet(path[0], damage, path);
 
                 map.addBullet(newBullet);
 
-                bulletThreadStatus.push_back(false);
+                bulletThreadStatus.push_back(false);    // Thêm trạng thái false vào danh sách vì thread đạn mới tạo nên thread chưa kết thúc
+                // Tạo thread đạn và nhét vào danh sách
                 bullet_threads.emplace_back(thread(&cgame::bulletMovement, this, ref(newBullet), newBullet.getPath(), mapIndex, ref(bulletThreadStatus), threadIndex, enemySpeed));
                 threadIndex++;
             }
         }
-
+        
+        // Tính thời gian delay để in
         int delayTime = floor(650 / sqrt(enemySpeed));
 
         this_thread::sleep_for(chrono::milliseconds(delayTime));
@@ -249,29 +253,32 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int indexEnemy) {
             ctool::Draw(tmp, enemyIndex - 1, path, ENEMY);
         }
 
+        // Kiểm tra trong danh sách các thread đạn xem thread nào đã hoàn thành
+        // Khi thread đạn hoàn thành có nghĩa là enemy đã bị bắn dính
         for (int i = 0; i < bullet_threads.size(); i++)
         {
             if (bulletThreadStatus[i] == true)
             {
-                bulletThreadStatus[i] = false;
+                bulletThreadStatus[i] = false;      // Set về false để bỏ qua thread này vào lần tới
 
-                enemy.decreaseHealth(damage);
+                enemy.decreaseHealth(damage);       // Trừ máu kẻ thù
 
+                // TH: Enemy hết máu thì set biến alive về false
                 if (enemy.getHealth() <= 0)
                 {
                     enemy.setAlive(false);
                     {
                         lock_guard<mutex> lock(printMtx);
                         cout << TEXT_CYAN_BG_LIGHT_YELLOW;
-                        tmp = "x";
+                        tmp = "x";      // Hiệu úng khi enemy chết
                         ctool::Draw(tmp, enemyIndex, path, ENEMY);
                         this_thread::sleep_for(chrono::milliseconds(delayTime));
-                        ctool::Draw(" ", enemyIndex, path, ENEMY);
+                        ctool::Draw(" ", enemyIndex, path, ENEMY);      // Xóa đi hiệu ứng
                     }
 
                     if (indexEnemy == numberEnemies - 1)
                     {
-                        gameOver.store(true);
+                        gameOver.store(true);       // Nếu enemy chết hết rồi thì end game
                         goto exit;
                     }
 
@@ -299,7 +306,7 @@ exit:
     }
 
     if (enemyIndex == path.size())    
-        gameOver.store(true);
+        gameOver.store(true);   // Nếu enemy đi đến cuối đường rồi thì end game
 }
 
 // Hàm di chuyển và vẽ đạn

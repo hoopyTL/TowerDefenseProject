@@ -42,7 +42,7 @@ void cenemy::setAlive(bool alive)
     _isAlive = alive; 
 }
 
-void cenemy::decreaseHealth(int damage) 
+void cenemy::decreaseHealth(double damage) 
 {
     _health -= damage;
 }
