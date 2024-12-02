@@ -14,9 +14,6 @@ public:
     bool getIsExist() const { return _ISEXIT; }
     void setIsExist(bool b) { _ISEXIT = b; }
 
-    /*bool getIsExist2() const { return _ISEXIT2; }
-    void setIsExist2(bool b) { _ISEXIT2 = b; }*/
-
     void addMap(const cmap& map);
 
     vector<cmap>& getMap() { return _map; }
@@ -24,7 +21,7 @@ public:
     void startGame();
     void processGame();
 
-    void endGame();
+    void endGame(vector<thread>& enemyThreads);
 
     void enemyMovement(cenemy& enemy, int mapIndex, int count);
     void bulletMovement(cbullet& bullet, vector<cpoint> path, int mapIndex, vector<bool>& bulletThreadStatus, int threadIndex, int enemySpeed);

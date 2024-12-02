@@ -78,25 +78,18 @@ int ctower::calculateShootDirection(const vector<cenemy>& enemiesList, int &trea
         treachIndex++;
         
         int pathIndex = treachPoint.index;
-
-        // Lấy tọa độ của điểm trong hệ lưới
-        cpoint reachPoint = cpoint::fromXYToRowCol(treachPoint.point);  // Chuyển đổi sang hệ lưới
+        cpoint reachPoint = cpoint::fromXYToRowCol(treachPoint.point);  
 
         int rowReach = reachPoint.getX();
         int colReach = reachPoint.getY();
 
-        // cout << "(" << rowReach << "," << colReach << ")";
-
-        // Sử dụng trực tiếp 'step' từ Treach
         int bulletStep = treachPoint.step;
 
-        // Kiểm tra sự trùng khớp của chỉ số trên đường đi của kẻ thù và bước viên đạn
-        for (const auto& enemy : enemiesList)
+        for (const auto& enemy: enemiesList)
         {
             int enemyIndex = enemy.getIndex();  // Lấy chỉ số của kẻ thù trong enemyPath
             // So sánh giữa chỉ số của ô ảnh hưởng và kẻ thù
             int enemyStep = pathIndex - enemyIndex + 1;
-              
 
             // Nếu bước viên đạn và bước của kẻ thù trùng nhau, tìm hướng bắn
             if (enemyStep == bulletStep)

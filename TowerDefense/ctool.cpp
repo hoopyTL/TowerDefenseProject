@@ -2,7 +2,6 @@
 #include "ctool.h"
 #include "cenemy.h"
 #include "ctower.h"
-#include "Sound.h"
 #include "cpoint.h"
 #include "cbullet.h"
 #include "cmap.h"

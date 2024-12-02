@@ -1,6 +1,5 @@
 ﻿#include "cmap.h"
 
-// Constructor
 cmap::cmap(int level) 
 {
     setLevel(level);
@@ -59,7 +58,7 @@ void cmap::resetMapData()
             _m[i][j] = cpoint(
                 cpoint::MAP_LEFT + j * cpoint::CELL_WIDTH + cpoint::X_OFFSET,
                 cpoint::MAP_TOP + i * cpoint::CELL_HEIGHT + cpoint::Y_OFFSET,
-                0
+                1
             );
         }
     }
@@ -76,17 +75,17 @@ void cmap::makeMapData()
             for (int i = 0; i <= 8; ++i)
             {
                 epath1.push_back(_m[2][i]);
-                _m[2][i].setC(1);
+                _m[2][i].setC(0);
             }
             for (int i = 3; i <= 9; ++i)
             {
                 epath1.push_back(_m[i][8]);
-                _m[i][8].setC(1);
+                _m[i][8].setC(0);
             }
             for (int i = 9; i < _width; ++i)
             {
                 epath1.push_back(_m[9][i]);
-                _m[9][i].setC(1);
+                _m[9][i].setC(0);
             }
 
             cenemy enemy1(2, 100, _m[2][0], epath1);
@@ -112,26 +111,22 @@ void cmap::makeMapData()
 
             for (int i = 0; i <= 9; ++i) {
                 epath1.push_back(_m[2][i]);
-                _m[2][i].setC(1);
+                _m[2][i].setC(0);
             }
             for (int i = 3; i <= 10; ++i) {
                 epath1.push_back(_m[i][9]);
-                _m[i][9].setC(1);
+                _m[i][9].setC(0);
             }
             for (int i = 10; i < _width; ++i) {
                 epath1.push_back(_m[10][i]);
-                _m[10][i].setC(1);
+                _m[10][i].setC(0);
             }
-
-            cenemy enemy1(4, 100, _m[2][0], epath1);
-            cenemy enemy2(3, 100, _m[2][0], epath1);
-            cenemy enemy3(2, 100, _m[2][0], epath1);
-            cenemy enemy4(1, 100, _m[2][0], epath1);
-
-            addEnemy(enemy1);
-            addEnemy(enemy2);
-            addEnemy(enemy3);
-            addEnemy(enemy4);
+            
+            for (int i = 4; i >= 1; i--)
+            {
+                cenemy enemy(i, 100, _m[2][0], epath1);
+                addEnemy(enemy);
+            }
 
             ctower tower1(_m[6][2]);
             tower1.createTreach(_ce);
@@ -158,106 +153,87 @@ void cmap::makeMapData()
 
             for (int i = 0; i <= 7; ++i) {
                 epath1.push_back(_m[3][i]);
-                _m[3][i].setC(1);
+                _m[3][i].setC(0);
             }
             for (int i = 4; i <= 10; ++i) {
                 epath1.push_back(_m[i][7]);
-                _m[i][7].setC(1);
+                _m[i][7].setC(0);
             }
             for (int i = 8; i < _width; ++i) {
                 epath1.push_back(_m[10][i]);
-                _m[10][i].setC(1);
+                _m[10][i].setC(0);
             }
 
-            // Add enemy to map 3
             cenemy enemy1(3, 100, _m[3][0], epath1);
-            _ce.push_back(enemy1);
+            addEnemy(enemy1);
 
             cenemy enemy2(3, 100, _m[3][0], epath1);
-            _ce.push_back(enemy2);
+            addEnemy(enemy2);
 
-            // Add tower to map 3
             ctower tower1(_m[5][16]);
             tower1.createTreach(_ce);
 
-            _ctw.push_back(tower1);
-
-            // Add another tower
             ctower tower2(_m[12][11]);
             tower2.createTreach(_ce);
 
-            _ctw.push_back(tower2);
+            addTower(tower1);
+            addTower(tower2);
 
             break;
         }
-        case 4:
+        default:
         {
             vector<cpoint> epath1;
             vector<cpoint> epath2;
 
             for (int i = 0; i <= 6; ++i) {
                 epath1.push_back(_m[4][i]);
-                _m[4][i].setC(1);
+                _m[4][i].setC(0);
             }
             for (int i = 5; i <= 10; ++i) {
                 epath1.push_back(_m[i][6]);
-                _m[i][6].setC(1);
+                _m[i][6].setC(0);
             }
             for (int i = 7; i < _width; ++i) {
                 epath1.push_back(_m[10][i]);
-                _m[10][i].setC(1);
+                _m[10][i].setC(0);
             }
 
-            // Add enemy to map 4
             cenemy enemy1(4, 100, _m[4][0], epath1);
-            _ce.push_back(enemy1);
-
             cenemy enemy2(4, 100, _m[4][0], epath1);
-            _ce.push_back(enemy2);
 
-            // Add tower to map 4
+            addEnemy(enemy1);
+            addEnemy(enemy2);
+
             ctower tower1(_m[6][4]);
             tower1.createTreach(_ce);
 
-            _ctw.push_back(tower1);
-
-            // Add another tower
             ctower tower2(_m[9][13]);
             tower2.createTreach(_ce);
 
-            _ctw.push_back(tower2);
-
-            break;
-        }
-        default:
-        {
-            cout << "Vui long nhap lai.";
-            break;
-        }
+            addTower(tower1);
+            addTower(tower2);
+        }       
     }
 }
 
-
-// Draw map
 void cmap::drawMap() {
-    // Draw map grid
-    for (int i = 0; i < _height; i++) {
-        for (int j = 0; j < _width; j++) {
+    for (int i = 0; i < _height; i++) 
+    {
+        for (int j = 0; j < _width; j++) 
+        {
             ctool::GotoXY(_m[i][j].getX(), _m[i][j].getY());
-            if (_m[i][j].getC() == 0) cout << '+';
+            if (_m[i][j].getC() == 1) cout << '+';
         }
     }
 
-    // Draw towers
     for (const auto& tower : _ctw) 
-    {
-        
+    {   
         ctool::GotoXY(tower.getCurr().getX(), tower.getCurr().getY());
-        cout << TEXT_GREEN_BG_LIGHT_YELLOW << "T";
+        cout << TEXT_BLUE_BG_LIGHT_YELLOW << "T";
     }
 }
 
-// Create bullet path
 vector<cpoint> cmap::createBulletPath(const ctower& tower, const vector<cenemy>& enemiesList) {
     int tReachIndex;
     int direction = tower.calculateShootDirection(enemiesList, tReachIndex);
@@ -274,7 +250,6 @@ vector<cpoint> cmap::createBulletPath(const ctower& tower, const vector<cenemy>&
     int rowTower = towerPos.getX(), colTower = towerPos.getY();
     int rowTarget = target.getX(), colTarget = target.getY();
 
-    // bpath.push_back(_m[rowTower][colTower]);
     while (rowTower != rowTarget || colTower != colTarget) 
     {
         switch (direction) {

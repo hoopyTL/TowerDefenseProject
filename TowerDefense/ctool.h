@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cpoint.h"
-#include "UI.h"
+#include "define.h"
 #include <mutex>
 #include <windows.h>
 #include <iostream>

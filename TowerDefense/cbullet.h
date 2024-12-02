@@ -8,20 +8,20 @@ using namespace std;
 class cbullet {
 private:
     cpoint _bpos;
-    int _damage;
+    double _damage;
     vector<cpoint> _bpath;
     bool _isActive;
 
 public:
     cbullet();
-    cbullet(cpoint pos, int damage, vector<cpoint> path);
+    cbullet(cpoint pos, double damage, vector<cpoint> path);
 
     cpoint getCurr() const;
-    int getDamage() const;
+    double getDamage() const;
     bool isActive() const;
 
     void setCurr(cpoint pos);
-    void setDamage(int damage);
+    void setDamage(double damage);
     void setActive(bool active);
 
     vector<cpoint>& getPath();

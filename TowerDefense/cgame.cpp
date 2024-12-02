@@ -1,6 +1,8 @@
 ﻿#include "cgame.h"
 #include "ctool.h"
 
+atomic<bool> gameOver(false);
+
 mutex printMtx;
 mutex gameMtx; // Mutex for game state updates
 mutex enemyMtx; // Mutex for enemies list access
@@ -15,21 +17,14 @@ void cgame::startGame()
 {
     system("cls");
 
-    cmap map1(1);
-    addMap(map1);
-
-    cmap map2(2);
-    addMap(map2);
-
-    cmap map3(3);
-    addMap(map3);
-
-    cmap map4(4);
-    addMap(map4);
+    for (int i = 1; i <= 4; ++i) {
+        addMap(cmap(i));
+    }
 }
 
 
-void cgame::processGame() {
+void cgame::processGame() 
+{
     if (_map.empty()) {
         return;
     }
@@ -101,37 +96,24 @@ void cgame::processGame() {
     // Khởi tạo các luồng để di chuyển kẻ địch
     vector<thread> enemyThreads;
     for (auto& enemy : enemies) {
-        enemyThreads.emplace_back(&cgame::enemyMovement, this, std::ref(enemy), mapIndex, indexEnemy);
+        enemyThreads.emplace_back(&cgame::enemyMovement, this, ref(enemy), mapIndex, indexEnemy);
         indexEnemy++;
     }
 
-    // Thread để cập nhật trạng thái game
-    std::thread gameStateThread(&cgame::endGame, this);
+    endGame(enemyThreads);
+}
 
-    // Đợi tất cả các thread di chuyển kẻ địch kết thúc
-    for (auto& t : enemyThreads) {
+void cgame::endGame(vector<thread>& enemyThreads)
+{
+    for (auto& t : enemyThreads)
+    {
         if (t.joinable()) {
             t.join();
         }
     }
 
-    // Đợi thread cập nhật trạng thái game kết thúc
-    if (gameStateThread.joinable()) {
-        gameStateThread.join();
-    }
-}
-
-void cgame::endGame()
-{
-    lock_guard<mutex> lock(gameMtx);
-    if (_ISEXIT)
+    if (gameOver.load())
     {
-        /*for (auto& t : enemyThreads)
-        {
-            if (t.joinable()) {
-                t.join();
-            }
-        }*/
 
         system("cls");
         system("color 4F"); // Màu nền đỏ, chữ trắng
@@ -175,8 +157,6 @@ void cgame::endGame()
     }
 }
 
-
-
 void cgame::enemyMovement(cenemy& enemy, int mapIndex, int indexEnemy) {
     vector<cmap>& mapList = getMap();
     cmap& map = mapList[mapIndex];
@@ -184,15 +164,14 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int indexEnemy) {
     auto& enemies = map.getEnemies();
     auto copyEnemies = enemies;
     int numberEnemies = enemies.size();
-
-    auto& towers = map.getTowers();
-
     vector<cpoint> path = enemy.getPath();
     cpoint ENEMY = enemy.getCurr();
-    int cntHit = enemy.getCntHit();
+    double enemyHealth = enemy.getHealth();
     int enemySpeed = enemy.getSpeed();
 
     int enemyIndex = 0;
+
+    auto& towers = map.getTowers();
 
     int step = 5;
     int timeDelay = indexEnemy * step * 500;
@@ -207,121 +186,99 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int indexEnemy) {
 
     string tmp;
 
-    while (enemyIndex < path.size())
-    {
-        if (enemy.isAlive() == true)
+    while (enemyIndex < path.size() && !gameOver.load() && enemy.isAlive())
+    {  
         {
+            lock_guard<mutex> lock(printMtx);
+            if (enemy.getHealth() > 0.75 * enemyHealth)
+                cout << TEXT_GREEN_BG_LIGHT_YELLOW;
+            else if (enemy.getHealth() >= 0.5 * enemyHealth)
+                cout << TEXT_YELLOW_BG_LIGHT_YELLOW;
+            else if (enemy.getHealth() >= 0.2 * enemyHealth)
+                cout << TEXT_RED_BG_LIGHT_YELLOW;
+            else
+                cout << TEXT_BLACK_BG_LIGHT_YELLOW;
+
+            string tmp = "E";
+            ctool::Draw(tmp, enemyIndex, path, ENEMY);
+        }
+
+        enemy.setCurr(path[enemyIndex]);
+        enemy.setIndex(enemyIndex++);
+
+        ENEMY = enemy.getCurr();
+
+        {
+            lock_guard<mutex> lock(enemyMtx);
+            copyEnemies[indexEnemy] = enemy;
+
+            for (auto& tower : towers)
             {
-                lock_guard<mutex> lock(printMtx);
-                if (enemy.getCntHit() == 0)
-                    cout << TEXT_GREEN_BG_LIGHT_YELLOW;
-                else if (enemy.getCntHit() == 1)
-                    cout << TEXT_YELLOW_BG_LIGHT_YELLOW;
-                else if (enemy.getCntHit() == 2)
-                    cout << TEXT_RED_BG_LIGHT_YELLOW;
-                else
-                    cout << TEXT_BLACK_BG_LIGHT_YELLOW;
+                auto path = map.createBulletPath(tower, copyEnemies);
 
-                string tmp = "E";
-                ctool::Draw(tmp, enemyIndex, path, ENEMY);
-            }
-
-            enemy.setCurr(path[enemyIndex]);
-            enemy.setIndex(enemyIndex++);
-
-            ENEMY = enemy.getCurr();
-
-            {
-                lock_guard<mutex> lock(enemyMtx);
-                copyEnemies[indexEnemy] = enemy;
-
-                for (auto& tower : towers)
+                if (path.empty())
                 {
-                    auto path = map.createBulletPath(tower, copyEnemies);
+                    continue;
+                }
 
-                    if (path.empty())
+                cbullet newBullet(path[0], damage, path);
+
+                map.addBullet(newBullet);
+
+                bulletThreadStatus.push_back(false);
+                bullet_threads.emplace_back(thread(&cgame::bulletMovement, this, ref(newBullet), newBullet.getPath(), mapIndex, ref(bulletThreadStatus), threadIndex, enemySpeed));
+                threadIndex++;
+            }
+        }
+
+        int delayTime = floor(650 / sqrt(enemySpeed));
+
+        this_thread::sleep_for(chrono::milliseconds(delayTime));
+        {
+            lock_guard<mutex> lock(printMtx);
+            tmp = " ";
+            ctool::Draw(tmp, enemyIndex - 1, path, ENEMY);
+        }
+
+        for (int i = 0; i < bullet_threads.size(); i++)
+        {
+            if (bulletThreadStatus[i] == true)
+            {
+                bulletThreadStatus[i] = false;
+
+                enemy.decreaseHealth(damage);
+
+                if (enemy.getHealth() <= 0)
+                {
+                    enemy.setAlive(false);
                     {
-                        continue;
+                        lock_guard<mutex> lock(printMtx);
+                        cout << TEXT_CYAN_BG_LIGHT_YELLOW;
+                        tmp = "x";
+                        ctool::Draw(tmp, enemyIndex, path, ENEMY);
+                        this_thread::sleep_for(chrono::milliseconds(50));
+                        ctool::Draw(" ", enemyIndex, path, ENEMY);
                     }
 
-
-
-                    cbullet newBullet(path[0], damage, path);
-
-
-                    map.addBullet(newBullet);
-
-                    bulletThreadStatus.push_back(false);
-                    bullet_threads.emplace_back(thread(&cgame::bulletMovement, this, ref(newBullet), newBullet.getPath(), mapIndex, ref(bulletThreadStatus), threadIndex, enemySpeed));
-                    threadIndex++;
-
-                }
-            }
-
-            timeDelay = 650 / sqrt(enemySpeed);
-
-            this_thread::sleep_for(chrono::milliseconds(timeDelay));
-            {
-                lock_guard<mutex> lock(printMtx);
-                tmp = " ";
-                ctool::Draw(tmp, enemyIndex - 1, path, ENEMY);
-            }
-
-            for (int i = 0; i < bullet_threads.size(); i++)
-            {
-                if (bulletThreadStatus[i] == true)
-                {
-                    bulletThreadStatus[i] = false;
-                    cntHit++;
-
-                    enemy.decreaseHealth(damage);
-
-                    enemy.setCntHit(cntHit);
-                    if (enemy.getHealth() <= 0)
+                    if (indexEnemy == numberEnemies - 1)
                     {
-                        enemy.setAlive(false);
-                        {
-                            lock_guard<mutex> lock(printMtx);
-                            cout << TEXT_CYAN_BG_LIGHT_YELLOW;
-                            tmp = "x";
-                            ctool::Draw(tmp, enemyIndex, path, ENEMY);
-                            Sleep(600);
-                            ctool::Draw(" ", enemyIndex, path, ENEMY);
-                        }
-                        if (indexEnemy == numberEnemies - 1)
-                        {
-                            {
-                                lock_guard<mutex> lock(gameMtx);
-                                setIsExist(true);
-                            }
-
-                            for (auto& t : bullet_threads)
-                            {
-                                if (t.joinable())
-                                {
-                                    t.join();
-                                }
-                            }
-
-                            return;
-                        }
-                        break;
+                        gameOver.store(true);
+                        goto exit;
                     }
+
+                    break;
                 }
             }
+        }
 
-        }
-        else
-        {
-            break;
-        }
     }
 
+exit:
     {
         lock_guard<mutex> lock(printMtx);
         cout << TEXT_CYAN_BG_LIGHT_YELLOW;
         tmp = " ";
-        ctool::Draw(tmp, enemyIndex, path, ENEMY);
+        ctool::Draw(tmp, enemyIndex - 1, path, ENEMY);
     }
 
     for (auto& t : bullet_threads)
@@ -332,11 +289,8 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int indexEnemy) {
         }
     }
 
-    {
-        lock_guard<mutex> lock(gameMtx);
-        setIsExist(true);
-    }
-    
+    if (enemyIndex == path.size())    
+        gameOver.store(true);
 }
 
 void cgame::bulletMovement(cbullet& bullet, vector<cpoint> path, int mapIndex, vector<bool>& bulletThreadStatus, int threadIndex, int enemySpeed)
@@ -351,7 +305,7 @@ void cgame::bulletMovement(cbullet& bullet, vector<cpoint> path, int mapIndex, v
     string tmp;
     if (bullet.isActive())
     {
-        while (bulletIndex < path.size() - 1)
+        while (bulletIndex < path.size() - 1 && !gameOver.load())
         {
             {
                 std::lock_guard<std::mutex> lock(printMtx);
@@ -372,9 +326,8 @@ void cgame::bulletMovement(cbullet& bullet, vector<cpoint> path, int mapIndex, v
                 lock_guard<std::mutex> lock(printMtx);
                 cpoint bulletPos = cpoint::fromXYToRowCol(BULLET);
 
-                if (bulletPos.getC() == 0)
+                if (bulletPos.getC() == 1)
                     tmp = "+";
-
                 else
                     tmp = " ";
 
