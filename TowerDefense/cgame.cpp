@@ -256,7 +256,7 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int indexEnemy) {
                         cout << TEXT_CYAN_BG_LIGHT_YELLOW;
                         tmp = "x";
                         ctool::Draw(tmp, enemyIndex, path, ENEMY);
-                        this_thread::sleep_for(chrono::milliseconds(50));
+                        this_thread::sleep_for(chrono::milliseconds(delayTime));
                         ctool::Draw(" ", enemyIndex, path, ENEMY);
                     }
 
