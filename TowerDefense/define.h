@@ -66,3 +66,13 @@
 #define TEXT_CYAN_BG_LIGHT_YELLOW "\033[36m\033[103m"
 #define TEXT_WHITE_BG_LIGHT_YELLOW "\033[37m\033[103m"
 
+// Các hướng bắn của tower
+#define UP_LEFT     0
+#define UP          1
+#define UP_RIGHT    2
+#define RIGHT       3
+#define DOWN_RIGHT  4
+#define DOWN        5
+#define DOWN_LEFT   6
+#define LEFT        7
+

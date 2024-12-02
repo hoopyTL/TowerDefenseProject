@@ -15,7 +15,6 @@ void ctower::setCurr(const cpoint& pos)
     _tpos = pos;
 }
 
-
 vector<Treach> ctower::getTreach() const
 {
     return _treach;
@@ -25,37 +24,33 @@ void ctower::createTreach(const vector<cenemy>& enemies)
 {
     _treach.clear();
 
-    if (enemies.empty()) return; // Không có enemy nào thì thoát sớm
+    if (enemies.empty()) 
+        return;
 
-    // Vị trí của tháp (được chuyển sang tọa độ lưới)
     cpoint towerPoint = cpoint::fromXYToRowCol(_tpos);
     int rowTower = towerPoint.getX();
     int colTower = towerPoint.getY();
 
-    // Duyệt qua từng enemy trong danh sách
     for (const auto& enemy : enemies) {
-        const auto& enemyPath = enemy.getPath(); // Lấy đường đi của enemy hiện tại
+        const auto& enemyPath = enemy.getPath(); 
 
-        // Duyệt qua từng điểm trên đường đi của enemy
         for (int i = 0; i < enemyPath.size(); ++i) {
             cpoint pathPoint = cpoint::fromXYToRowCol(enemyPath[i]);
 
             int rowPath = pathPoint.getX();
             int colPath = pathPoint.getY();
 
-            // Kiểm tra nếu điểm này có nằm trong phạm vi của tháp
             if (rowTower == rowPath || colTower == colPath || abs(rowTower - rowPath) == abs(colTower - colPath)) {
                 bool exists = false;
                 for (const auto& target : _treach) 
                 {
-                    if (target.point == enemyPath[i]) 
+                    if (target.pos == enemyPath[i]) 
                     { 
                         exists = true;
                         break;
                     }
                 }
 
-                // Nếu chưa tồn tại, thêm vào _treach
                 if (!exists) {
                     _treach.push_back({ enemyPath[i], i, towerPoint.countSteps(pathPoint) });
                 }
@@ -65,10 +60,10 @@ void ctower::createTreach(const vector<cenemy>& enemies)
 }
 
 
-int ctower::calculateShootDirection(const vector<cenemy>& enemiesList, int &treachIndex) const
+int ctower::calShootDirection(const vector<cenemy>& enemiesList, int &treachIndex) const
 {
     // Lấy tọa độ của tháp trong hệ lưới
-    cpoint towerPoint = cpoint::fromXYToRowCol(_tpos);  // Chuyển đổi sang hệ lưới
+    cpoint towerPoint = cpoint::fromXYToRowCol(_tpos);
     int rowTower = towerPoint.getX();
     int colTower = towerPoint.getY();
 
@@ -78,7 +73,7 @@ int ctower::calculateShootDirection(const vector<cenemy>& enemiesList, int &trea
         treachIndex++;
         
         int pathIndex = treachPoint.index;
-        cpoint reachPoint = cpoint::fromXYToRowCol(treachPoint.point);  
+        cpoint reachPoint = cpoint::fromXYToRowCol(treachPoint.pos);  
 
         int rowReach = reachPoint.getX();
         int colReach = reachPoint.getY();
@@ -87,11 +82,10 @@ int ctower::calculateShootDirection(const vector<cenemy>& enemiesList, int &trea
 
         for (const auto& enemy: enemiesList)
         {
-            int enemyIndex = enemy.getIndex();  // Lấy chỉ số của kẻ thù trong enemyPath
-            // So sánh giữa chỉ số của ô ảnh hưởng và kẻ thù
+            int enemyIndex = enemy.getIndex();
+
             int enemyStep = pathIndex - enemyIndex + 1;
 
-            // Nếu bước viên đạn và bước của kẻ thù trùng nhau, tìm hướng bắn
             if (enemyStep == bulletStep)
             {
                 

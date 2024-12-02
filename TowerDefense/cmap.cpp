@@ -236,7 +236,7 @@ void cmap::drawMap() {
 
 vector<cpoint> cmap::createBulletPath(const ctower& tower, const vector<cenemy>& enemiesList) {
     int tReachIndex;
-    int direction = tower.calculateShootDirection(enemiesList, tReachIndex);
+    int direction = tower.calShootDirection(enemiesList, tReachIndex);
 
     auto treachList = tower.getTreach();
     if (direction == -1 || tReachIndex < 0 || tReachIndex >= treachList.size())
@@ -244,7 +244,7 @@ vector<cpoint> cmap::createBulletPath(const ctower& tower, const vector<cenemy>&
 
     vector<cpoint> bpath;
     Treach treach = treachList[tReachIndex];
-    cpoint target = cpoint::fromXYToRowCol(treach.point);
+    cpoint target = cpoint::fromXYToRowCol(treach.pos);
     cpoint towerPos = cpoint::fromXYToRowCol(tower.getCurr());
 
     int rowTower = towerPos.getX(), colTower = towerPos.getY();
