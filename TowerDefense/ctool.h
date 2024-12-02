@@ -44,6 +44,7 @@ public:
     static void printAbout();
 	static void drawAboutText();
     static void drawSettingText();
+    static void drawEndGameText();
     static void drawSplash(int delayTime);
 	static void drawTowerDefenseText();
     static void drawMapLevelText();

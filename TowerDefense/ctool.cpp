@@ -47,6 +47,21 @@ void ctool::drawSettingText() {
 
 }
 
+void ctool::drawEndGameText() {
+    int x, y;
+    x = 30;
+    y = 13;  
+
+    ctool tool;
+
+    tool.printCharactors(L"███████╗███╗░░██╗██████╗░░░░░██████╗░░█████╗░░███╗░░░███╗░███████╗", { short(x), short(y) }, Color::RED, Color::YELLOW);
+    tool.printCharactors(L"██╔════╝████╗░██║██╔══██╗░░░██╔════╝░██╔══██╗░████╗░████║░██╔════╝", { short(x), short(y + 1) }, Color::RED, Color::YELLOW);
+    tool.printCharactors(L"█████╗░░██╔██╗██║██║░░██║░░░██║░░██╗░███████║░██╔████╔██║░█████╗░░", { short(x), short(y + 2) }, Color::RED, Color::YELLOW);
+    tool.printCharactors(L"██╔══╝░░██║╚████║██╔══██║░░░██║░░╚██╗██╔══██║░██║╚██╔╝██║░██╔══╝░░", { short(x), short(y + 3) }, Color::RED, Color::YELLOW);
+    tool.printCharactors(L"███████╗██║░╚███║██████╔╝░░░╚██████╔╝██║░░██║░██║░╚═╝░██║░███████╗", { short(x), short(y + 4) }, Color::RED, Color::YELLOW);
+
+}
+
 void ctool::drawGoodByeText(int delayTime) {
     int x, y;
     x = 25;

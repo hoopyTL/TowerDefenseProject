@@ -124,28 +124,9 @@ void cgame::endGame(vector<thread>& enemyThreads)
     {
 
         system("cls");
-        system("color 4F"); // Màu nền đỏ, chữ trắng
 
-        // Tọa độ trung tâm màn hình
-        int centerX = 40;
-        int centerY = 12;
+        ctool::drawEndGameText();
 
-        // Vẽ chữ "END GAME" lớn
-        ctool::GotoXY(centerX - 18, centerY - 3);
-        std::cout << R"(███████╗███╗   ██╗██████╗       ██████╗  █████╗ ███╗   ███╗███████╗)";
-        ctool::GotoXY(centerX - 18, centerY - 2);
-        std::cout << R"(██╔════╝████╗  ██║██╔══██╗      ██╔══██╗██╔══██╗████╗ ████║██╔════╝)";
-        ctool::GotoXY(centerX - 18, centerY - 1);
-        std::cout << R"(█████╗  ██╔██╗ ██║██║  ██║█████╗██    ╔╝███████║██╔████╔██║█████╗  )";
-        ctool::GotoXY(centerX - 18, centerY);
-        std::cout << R"(██╔══╝  ██║╚██╗██║██║  ██║╚════╝██╔═══╝ ██╔══██║██║╚██╔╝██║██╔══╝  )";
-        ctool::GotoXY(centerX - 18, centerY + 1);
-        std::cout << R"(███████╗██║ ╚████║██████╔╝      ██████  ██║  ██║██║ ╚═╝ ██║███████╗)";
-        ctool::GotoXY(centerX - 18, centerY + 2);
-        std::cout << R"(╚══════╝╚═╝  ╚═══╝╚═════╝       ╚═╝     ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝)";
-
-        ctool::GotoXY(centerX - 10, centerY + 5);
-        std::cout << "Press ESC to Restart";
 
         while (true) 
         {
