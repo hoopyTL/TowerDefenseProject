@@ -9,20 +9,20 @@
 class cmap
 {
 private:
-    vector<cenemy> _ce;
-    vector<ctower> _ctw;
-    vector<cbullet> _cb;
+    vector<cenemy> _ce; // Danh sách kẻ thù
+    vector<ctower> _ctw;    // Danh sách trụ
+    vector<cbullet> _cb;    // Danh sách đạn
 
-    int _height;
-    int _width;
-    vector<vector<cpoint>> _m;
-    int _level;
+    int _height;    // Chiều cao
+    int _width;     // Chiều rộng
+    vector<vector<cpoint>> _m;      // Map để vẽ
+    int _level;     // Lvel của map
 
 public:
     cmap(int);
-    void resetMapData();
+    void resetMapData();    // Khởi tạo giá trị từng ô trong map
     void makeMapData();
-    void drawMap();
+    void drawMap();     // Vẽ map
 
     int getHeight() const;
     int getWidth() const;
@@ -39,7 +39,7 @@ public:
     vector<cenemy>& getEnemies();
     vector<ctower>& getTowers();
     vector<cbullet>& getBullets();
-    vector<vector<cpoint>>& getRealMap();
 
+    // Tạo đường đi cho đạn dựa trên trụ và danh sách kẻ thù
     vector<cpoint> createBulletPath(const ctower& tower, const vector<cenemy>& enemiesList);
 };

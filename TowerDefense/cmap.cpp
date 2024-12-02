@@ -1,10 +1,11 @@
 ﻿#include "cmap.h"
 
+// Tạo map dựa trên level
 cmap::cmap(int level) 
 {
     setLevel(level);
-    setHeight(cpoint::MAP_HEIGHT + (level - 1));
-    setWidth(cpoint::MAP_WIDTH + 3 * (level - 1));
+    setHeight(cpoint::MAP_HEIGHT + (level - 1));    // Tăng 1 hàng mỗi lần map tăng 1 level
+    setWidth(cpoint::MAP_WIDTH + 3 * (level - 1));  // Tăng 3 cột mỗi lần map tăng 1 level
 
     _m.resize(_height);
 
@@ -44,11 +45,6 @@ vector<cenemy>& cmap::getEnemies() { return _ce; }
 vector<ctower>& cmap::getTowers() { return _ctw; }
 vector<cbullet>& cmap::getBullets() { return _cb; }
 
-vector<vector<cpoint>>& cmap::getRealMap()
-{
-    return _m;
-}
-
 void cmap::resetMapData() 
 {
     for (int i = 0; i < _height; i++) 
@@ -58,12 +54,13 @@ void cmap::resetMapData()
             _m[i][j] = cpoint(
                 cpoint::MAP_LEFT + j * cpoint::CELL_WIDTH + cpoint::X_OFFSET,
                 cpoint::MAP_TOP + i * cpoint::CELL_HEIGHT + cpoint::Y_OFFSET,
-                1
+                1   // Nơi không có đường đi thì setC = 1
             );
         }
     }
 }
 
+// Map sẽ dựa vào level để tạo ra các thông số phù hợp
 void cmap::makeMapData() 
 {
     switch(_level)
@@ -72,6 +69,7 @@ void cmap::makeMapData()
         {
             vector<cpoint> epath1;
 
+            // Tạo lộ trình cho kẻ thù (epath1)
             for (int i = 0; i <= 8; ++i)
             {
                 epath1.push_back(_m[2][i]);
@@ -88,12 +86,14 @@ void cmap::makeMapData()
                 _m[9][i].setC(0);
             }
 
+            // Tạo kẻ thù
             cenemy enemy1(2, 100, _m[2][0], epath1);
             cenemy enemy2(2, 100, _m[2][0], epath1);
 
             addEnemy(enemy1);
             addEnemy(enemy2);
 
+            // Tạo trụ và danh sách các ô ảnh hưởng của trụ
             ctower tower1(_m[5][3]);
             tower1.createTreach(_ce);
 
@@ -165,9 +165,9 @@ void cmap::makeMapData()
             }
 
             cenemy enemy1(3, 100, _m[3][0], epath1);
-            addEnemy(enemy1);
-
             cenemy enemy2(3, 100, _m[3][0], epath1);
+
+            addEnemy(enemy1);
             addEnemy(enemy2);
 
             ctower tower1(_m[5][16]);
@@ -181,7 +181,7 @@ void cmap::makeMapData()
 
             break;
         }
-        default:
+        case 4:
         {
             vector<cpoint> epath1;
             vector<cpoint> epath2;
@@ -217,7 +217,9 @@ void cmap::makeMapData()
     }
 }
 
-void cmap::drawMap() {
+void cmap::drawMap() 
+{
+    // In ra kí hiệu cho các vị trí không phải đường đi
     for (int i = 0; i < _height; i++) 
     {
         for (int j = 0; j < _width; j++) 
@@ -227,6 +229,7 @@ void cmap::drawMap() {
         }
     }
 
+    // In ra danh sách các trụ
     for (const auto& tower : _ctw) 
     {   
         ctool::GotoXY(tower.getCurr().getX(), tower.getCurr().getY());
@@ -236,23 +239,28 @@ void cmap::drawMap() {
 
 vector<cpoint> cmap::createBulletPath(const ctower& tower, const vector<cenemy>& enemiesList) {
     int tReachIndex;
-    int direction = tower.calShootDirection(enemiesList, tReachIndex);
+    int direction = tower.calShootDirection(enemiesList, tReachIndex);      // Hướng bắn
 
     auto treachList = tower.getTreach();
     if (direction == -1 || tReachIndex < 0 || tReachIndex >= treachList.size())
         return {};
 
-    vector<cpoint> bpath;
+    vector<cpoint> bpath;   /// Đường đi của đạn
+
     Treach treach = treachList[tReachIndex];
+
+    // Lấy tọa độ trụ và ô ảnh hưởng mà trụ sẽ bắn đến dựa trên hướng bắn
     cpoint target = cpoint::fromXYToRowCol(treach.pos);
     cpoint towerPos = cpoint::fromXYToRowCol(tower.getCurr());
 
     int rowTower = towerPos.getX(), colTower = towerPos.getY();
     int rowTarget = target.getX(), colTarget = target.getY();
 
+    // Tạo đường đi của đạn từ trụ đến ô ảnh hưởng (bỏ đi tọa độ đầu tiên vì đạn phải cách trụ 1 ô mới vẽ được)
     while (rowTower != rowTarget || colTower != colTarget) 
     {
-        switch (direction) {
+        switch (direction) 
+        {
         case UP_LEFT:     rowTower--; colTower--; break;
         case UP:          rowTower--; break;
         case UP_RIGHT:    rowTower--; colTower++; break;
@@ -260,7 +268,7 @@ vector<cpoint> cmap::createBulletPath(const ctower& tower, const vector<cenemy>&
         case DOWN_RIGHT:  rowTower++; colTower++; break;
         case DOWN:        rowTower++; break;
         case DOWN_LEFT:   rowTower++; colTower--; break;
-        case LEFT:        colTower--; break;
+        case LEFT:        colTower--;
         }
         bpath.push_back(_m[rowTower][colTower]);
     }

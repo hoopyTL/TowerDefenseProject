@@ -6,7 +6,7 @@ class cgame
 {
 private:
     vector<cmap> _map; 
-    bool _ISEXIT;
+    bool _ISEXIT;    // Biến này để thoát chương trình
 
 public:
     cgame() : _ISEXIT(false) {}

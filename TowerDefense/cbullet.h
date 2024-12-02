@@ -5,12 +5,13 @@
 
 using namespace std;
 
-class cbullet {
+class cbullet 
+{
 private:
-    cpoint _bpos;
-    double _damage;
-    vector<cpoint> _bpath;
-    bool _isActive;
+    cpoint _bpos;   // Tọa độ của đạn
+    double _damage; // Sát thương
+    vector<cpoint> _bpath;  // Đường đi
+    bool _isActive; // Kiểm tra xem đạn đã đi hết đường chưa (đi hết thì active là false)
 
 public:
     cbullet();

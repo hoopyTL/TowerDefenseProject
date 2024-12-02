@@ -59,7 +59,6 @@ void ctower::createTreach(const vector<cenemy>& enemies)
     }
 }
 
-
 int ctower::calShootDirection(const vector<cenemy>& enemiesList, int &treachIndex) const
 {
     // Lấy tọa độ của tháp trong hệ lưới
@@ -68,13 +67,16 @@ int ctower::calShootDirection(const vector<cenemy>& enemiesList, int &treachInde
     int colTower = towerPoint.getY();
 
     treachIndex = -1;
+
+    // Duyệt qua các ô ảnh hưởng trong danh sách
     for (const Treach &treachPoint : _treach)
     {
         treachIndex++;
         
         int pathIndex = treachPoint.index;
-        cpoint reachPoint = cpoint::fromXYToRowCol(treachPoint.pos);  
 
+        // Lấy tọa độ của ô ảnh hưởng trong danh sách các ô ảnh hưởng (trong hệ lưới)
+        cpoint reachPoint = cpoint::fromXYToRowCol(treachPoint.pos);  
         int rowReach = reachPoint.getX();
         int colReach = reachPoint.getY();
 
@@ -82,33 +84,35 @@ int ctower::calShootDirection(const vector<cenemy>& enemiesList, int &treachInde
 
         for (const auto& enemy: enemiesList)
         {
-            int enemyIndex = enemy.getIndex();
+            int enemyIndex = enemy.getIndex();  // Lấy thứ tự của ô mà kẻ thù đang đứng
 
-            int enemyStep = pathIndex - enemyIndex + 1;
+            int enemyStep = pathIndex - enemyIndex + 1;     // +1 vì đây là tính khoảng cách giữa 2 ô trên lộ trình của kẻ thù
 
+            // Kiểm tra xem số bước từ kẻ thù đến ô ảnh hưởng có bằng từ trụ đến ô ảnh hưởng ko
             if (enemyStep == bulletStep)
             {
                 
-                // Determine shooting direction based on coordinate difference
                 if (rowReach < rowTower && colReach < colTower)
-                    return UP_LEFT;  // Diagonal Up-Left
+                    return UP_LEFT;  
                 if (rowReach < rowTower && colReach == colTower)
-                    return UP;       // Vertical Up
+                    return UP;       
                 if (rowReach < rowTower && colReach > colTower)
-                    return UP_RIGHT; // Diagonal Up-Right
+                    return UP_RIGHT; 
                 if (rowReach == rowTower && colReach > colTower)
-                    return RIGHT;    // Horizontal Right
+                    return RIGHT;    
                 if (rowReach > rowTower && colReach > colTower)
-                    return DOWN_RIGHT; // Diagonal Down-Right
+                    return DOWN_RIGHT; 
                 if (rowReach > rowTower && colReach == colTower)
-                    return DOWN;     // Vertical Down
+                    return DOWN;     
                 if (rowReach > rowTower && colReach < colTower)
-                    return DOWN_LEFT; // Diagonal Down-Left
+                    return DOWN_LEFT; 
                 if (rowReach == rowTower && colReach < colTower)
-                    return LEFT;     // Horizontal Left
+                    return LEFT;     
             }
         }
     }
+
+    // Nếu không có hướng bắn nào thì trả về -1 cho 2 giá trị (treachIndex và shootDirection)
 
     treachIndex = -1;
      

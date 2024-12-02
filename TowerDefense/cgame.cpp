@@ -1,18 +1,25 @@
 ﻿#include "cgame.h"
 #include "ctool.h"
 
-atomic<bool> gameOver(false);
+atomic<bool> gameOver(false);   
+
+// Khai báo 1 biến bool toàn cục để ghi nhận khi nào chương trình kết thúc
+// Có 2 loại kết thúc là: 
+// 1. Toàn bộ enemy bị bắn chết
+// 2. Có 1 enemy đi đến cuối đường
+
+// Khởi tạo các biến mutex để quản lý việc thay đổi dữ liệu và in
 
 mutex printMtx;
-mutex gameMtx; // Mutex for game state updates
 mutex enemyMtx; // Mutex for enemies list access
-mutex bulletMtx; // Mutex for enemies list access
+
 
 void cgame::addMap(const cmap& map)
 {
     _map.push_back(map);
 }
 
+// Bắt đầu game bằng cách thêm 4 map vào list
 void cgame::startGame()
 {
     system("cls");
@@ -22,7 +29,7 @@ void cgame::startGame()
     }
 }
 
-
+// Hàm chạy game (chạy các luồng enemy và đạn)
 void cgame::processGame() 
 {
     if (_map.empty()) {
@@ -103,6 +110,7 @@ void cgame::processGame()
     endGame(enemyThreads);
 }
 
+// Hàm xử lý sau khi trò chơi kết thúc (có thể hởi người chơi về việc chơi lại hoặc ....)
 void cgame::endGame(vector<thread>& enemyThreads)
 {
     for (auto& t : enemyThreads)
@@ -119,8 +127,8 @@ void cgame::endGame(vector<thread>& enemyThreads)
         system("color 4F"); // Màu nền đỏ, chữ trắng
 
         // Tọa độ trung tâm màn hình
-        int centerX = 40; // Tùy chỉnh tọa độ
-        int centerY = 12; // Tùy chỉnh tọa độ
+        int centerX = 40;
+        int centerY = 12;
 
         // Vẽ chữ "END GAME" lớn
         ctool::GotoXY(centerX - 18, centerY - 3);
@@ -157,6 +165,7 @@ void cgame::endGame(vector<thread>& enemyThreads)
     }
 }
 
+// Hàm di chuyển và vẽ 1 enemy
 void cgame::enemyMovement(cenemy& enemy, int mapIndex, int indexEnemy) {
     vector<cmap>& mapList = getMap();
     cmap& map = mapList[mapIndex];
@@ -178,8 +187,8 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int indexEnemy) {
 
     this_thread::sleep_for(chrono::milliseconds(timeDelay));
 
-    vector<thread> bullet_threads;
-    vector<bool> bulletThreadStatus;
+    vector<thread> bullet_threads;  // Danh sách các luồng đạn
+    vector<bool> bulletThreadStatus;    // Danh sách trạng thái của các luồng (đã kết thúc chưa, chưa thì là False)
 
     int damage = 30;
     int threadIndex = 0;
@@ -293,6 +302,7 @@ exit:
         gameOver.store(true);
 }
 
+// Hàm di chuyển và vẽ đạn
 void cgame::bulletMovement(cbullet& bullet, vector<cpoint> path, int mapIndex, vector<bool>& bulletThreadStatus, int threadIndex, int enemySpeed)
 {
     vector<cmap> mapList = getMap();
