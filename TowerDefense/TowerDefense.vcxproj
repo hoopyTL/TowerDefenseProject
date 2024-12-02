@@ -131,32 +131,20 @@
     <ClCompile Include="cenemy.cpp" />
     <ClCompile Include="cgame.cpp" />
     <ClCompile Include="cmap.cpp" />
-    <ClCompile Include="Control.cpp" />
     <ClCompile Include="cpoint.cpp" />
     <ClCompile Include="ctool.cpp" />
     <ClCompile Include="ctower.cpp" />
-    <ClCompile Include="FileIO.cpp" />
-    <ClCompile Include="InputHandle.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Model.cpp" />
-    <ClCompile Include="Sound.cpp" />
-    <ClCompile Include="View.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cbullet.h" />
     <ClInclude Include="cenemy.h" />
     <ClInclude Include="cgame.h" />
     <ClInclude Include="cmap.h" />
-    <ClInclude Include="Control.h" />
     <ClInclude Include="cpoint.h" />
     <ClInclude Include="ctool.h" />
     <ClInclude Include="ctower.h" />
-    <ClInclude Include="FileIO.h" />
-    <ClInclude Include="InputHandle.h" />
-    <ClInclude Include="Model.h" />
-    <ClInclude Include="Sound.h" />
     <ClInclude Include="UI.h" />
-    <ClInclude Include="View.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
