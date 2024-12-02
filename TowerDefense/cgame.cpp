@@ -1,15 +1,16 @@
 ﻿#include "cgame.h"
+#include "ctool.h"
 
 mutex printMtx;
 // mutex gameMtx; // Mutex for game state updates
 mutex enemyMtx; // Mutex for enemies list access
 
-void cgame::addMap(const cmap& map) 
+void cgame::addMap(const cmap& map)
 {
     _map.push_back(map);
 }
 
-void cgame::startGame() 
+void cgame::startGame()
 {
     system("cls");
 
@@ -27,66 +28,108 @@ void cgame::startGame()
 }
 
 
-void cgame::processGame() 
-{
-    if (_map.empty()) 
-    {
+void cgame::processGame() {
+    if (_map.empty()) {
         return;
     }
 
+    int option = 0;  // Mặc định chọn bản đồ đầu tiên
+    int choice = 0;  // Lựa chọn bản đồ cuối cùng (để sử dụng sau)
+    std::cout << "-----CHOOSE MAP-----\n";
+    while (true) {
+        //system("cls");  // Xóa màn hình
+        system("color E3");  // Đặt màu nền và màu chữ
+
+
+        // Vẽ các ô cho từng bản đồ (1-4)
+        ctool::printRectangle(5, 5, 30, 3);  // Ô cho Map 1
+        ctool::printRectangle(5, 9, 30, 3);  // Ô cho Map 2
+        ctool::printRectangle(5, 13, 30, 3); // Ô cho Map 3
+        ctool::printRectangle(5, 17, 30, 3); // Ô cho Map 4
+
+        // In các lựa chọn vào các ô chữ nhật
+        for (int i = 0; i < 4; ++i) {
+            // Nếu đang chọn mục này, tô màu xanh
+            if (i == option) {
+                setColor(13, 3);  // Highlight in blue
+            }
+            else {
+                setColor(14, 3);  // Các mục còn lại dùng màu mặc định
+            }
+
+            // In các lựa chọn bản đồ vào giữa các ô chữ nhật
+            ctool::GotoXY(7, 6 + i * 4);  // Vị trí chữ trong ô
+            std::cout << "Map " << (i + 1);  // In "Map 1", "Map 2", ...
+        }
+
+        setColor(12, 3);  // Reset lại màu sắc
+
+        // Nhận đầu vào từ người dùng (phím mũi tên hoặc Enter)
+        char ch = _getch();
+
+        // Điều hướng lên/xuống
+        if (ch == KEY_UP) {  // Di chuyển lên
+            option = (option > 0) ? option - 1 : 3;  // Nếu ở đầu, quay lại cuối
+        }
+        else if (ch == KEY_DOWN) {  // Di chuyển xuống
+            option = (option + 1) % 4;  // Nếu ở cuối, quay lại đầu
+        }
+        else if (ch == KEY_ENTER) {  // Chọn
+            choice = option + 1;  // Chọn bản đồ (Map 1, Map 2, ...)
+            break;  // Thoát vòng lặp sau khi chọn
+        }
+        else if (ch == 27) {  // Phím ESC để quay lại
+            return;  // Quay lại nếu nhấn ESC
+        }
+    }
+
+    // Sau khi chọn xong, bạn có thể sử dụng lựa chọn cho bản đồ
     system("cls");
+    system("color E3");  // Đặt màu nền và màu chữ
+    setColor(14, 0);
+    int mapIndex = choice - 1;  // Xác định chỉ mục bản đồ
 
-    int choice;
-    cout << "Choose map (1-4): ";
-    cin >> choice;
-
-    system("cls");
-
-    // SetConsoleTextAttribute(consoleOutput);
-
-    int mapIndex = choice - 1;
-
+    // Vẽ và hiển thị bản đồ đã chọn
     _map[mapIndex].drawMap();
 
-    auto& map = _map[mapIndex]; 
+    auto& map = _map[mapIndex];  // Lấy bản đồ đã chọn
     vector<cenemy>& enemies = map.getEnemies();
 
     int indexEnemy = 0;
 
-    // Launch threads for enemy movements
+    // Khởi tạo các luồng để di chuyển kẻ địch
     vector<thread> enemyThreads;
-    for (auto& enemy : enemies) 
-    {
+    for (auto& enemy : enemies) {
         enemyThreads.emplace_back(&cgame::enemyMovement, this, std::ref(enemy), mapIndex, indexEnemy);
         indexEnemy++;
     }
 
-    // Thread to update game state
+    // Thread để cập nhật trạng thái game
     std::thread gameStateThread(&cgame::gameStateUpdate, this);
 
-    // Wait for all enemy movement threads to finish
+    // Đợi tất cả các thread di chuyển kẻ địch kết thúc
     for (auto& t : enemyThreads) {
         if (t.joinable()) {
             t.join();
         }
     }
 
-    // Wait for the game state thread to finish
-    if (gameStateThread.joinable()) 
-    {
+    // Đợi thread cập nhật trạng thái game kết thúc
+    if (gameStateThread.joinable()) {
         gameStateThread.join();
     }
 }
 
+
 void cgame::gameStateUpdate() {
-    while (_isRunning && !_ISEXIT1) 
+    while (_isRunning && !_ISEXIT1)
     {
-        if (getIsExist1()) 
+        if (getIsExist1())
         {
             system("cls");
             lock_guard<mutex> lock(printMtx); // Synchronize game state updates
             ctool::GotoXY(0, 20);
-            // cout << "END GAME";
+            cout << "END GAME";
         }
         this_thread::sleep_for(std::chrono::milliseconds(100)); // Use std::this_thread::sleep_for for better cross-platform compatibility
     }
@@ -121,20 +164,20 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int indexEnemy) {
 
     string tmp;
 
-    while(enemyIndex < path.size())
+    while (enemyIndex < path.size())
     {
         if (enemy.isAlive() == true)
         {
             {
                 lock_guard<mutex> lock(printMtx);
                 if (enemy.getCntHit() == 0)
-                    cout << TEXT_GREEN;
+                    cout << TEXT_GREEN_BG_LIGHT_YELLOW;
                 else if (enemy.getCntHit() == 1)
-                    cout << TEXT_YELLOW;
+                    cout << TEXT_YELLOW_BG_LIGHT_YELLOW;
                 else if (enemy.getCntHit() == 2)
-                    cout << TEXT_RED;
+                    cout << TEXT_RED_BG_LIGHT_YELLOW;
                 else
-                    cout << TEXT_PURPLE;
+                    cout << TEXT_PURPLE_BG_LIGHT_YELLOW;
 
                 string tmp = "E";
                 ctool::Draw(tmp, enemyIndex, path, ENEMY);
@@ -158,7 +201,7 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int indexEnemy) {
                         continue;
                     }
 
-                    
+
 
                     cbullet newBullet(path[0], damage, path);
 
@@ -212,7 +255,7 @@ void cgame::enemyMovement(cenemy& enemy, int mapIndex, int indexEnemy) {
         ctool::Draw(tmp, enemyIndex, path, ENEMY);
     }
 
-    for (auto& t : bullet_threads) 
+    for (auto& t : bullet_threads)
     {
         if (t.joinable()) {
             t.join();
@@ -237,7 +280,7 @@ void cgame::bulletMovement(cbullet& bullet, vector<cpoint> path, int mapIndex, v
         {
             {
                 std::lock_guard<std::mutex> lock(printMtx);
-                cout << TEXT_BRIGHT_BLUE;
+                cout << TEXT_PURPLE_BG_LIGHT_YELLOW;
                 string tmp = "o";
                 ctool::Draw(tmp, bulletIndex, path, BULLET);
             }

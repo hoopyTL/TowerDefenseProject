@@ -253,7 +253,7 @@ void cmap::drawMap() {
     {
         
         ctool::GotoXY(tower.getCurr().getX(), tower.getCurr().getY());
-        cout << TEXT_CYAN << "T" << RESET_COLOR;
+        cout << TEXT_GREEN_BG_LIGHT_YELLOW << "T";
     }
 }
 

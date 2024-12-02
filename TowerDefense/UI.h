@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 // COLOR BACKGROUND
 #define BG_BLACK 0      
@@ -21,10 +21,11 @@
 // KEYBOARD
 #define SPACE_KEY 32
 #define ESC 33
-#define KEY_UP 34
-#define KEY_DOWN 35
-#define KEY_LEFT 36
-#define KEY_RIGHT 37
+#define KEY_UP 72
+#define KEY_DOWN 80
+#define KEY_LEFT 75
+#define KEY_RIGHT 77
+#define KEY_ENTER 13
 
 // SOUNDTRACK
 #define BACKGROUND_SOUND 0
@@ -54,3 +55,13 @@
 #define TEXT_BRIGHT_PURPLE "\033[95m"
 #define TEXT_BRIGHT_CYAN "\033[96m"
 #define TEXT_BRIGHT_WHITE "\033[97m"
+
+// Các màu chữ kết hợp với nền vàng nhạt
+#define TEXT_BLACK_BG_LIGHT_YELLOW "\033[30m\033[103m"
+#define TEXT_RED_BG_LIGHT_YELLOW "\033[31m\033[103m"
+#define TEXT_GREEN_BG_LIGHT_YELLOW "\033[32m\033[103m"
+#define TEXT_YELLOW_BG_LIGHT_YELLOW "\033[33m\033[103m"
+#define TEXT_BLUE_BG_LIGHT_YELLOW "\033[34m\033[103m"
+#define TEXT_PURPLE_BG_LIGHT_YELLOW "\033[35m\033[103m"
+#define TEXT_CYAN_BG_LIGHT_YELLOW "\033[36m\033[103m"
+#define TEXT_WHITE_BG_LIGHT_YELLOW "\033[37m\033[103m"
